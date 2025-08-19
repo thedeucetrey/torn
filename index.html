@@ -3,216 +3,140 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Undercurrent Game UI - Deep Mining & Economy</title>
+<title>Undercurrent Game - Advanced Business Simulation</title>
 <style>
   /* Reset and base styles */
   body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
+    margin: 0; padding: 0; height: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f0f0f0;
     color: #222;
   }
   #container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
+    display: flex; flex-direction: column; height: 100vh; overflow: hidden;
   }
   #banner {
     flex: 0 0 90px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #000;
-    position: relative;
+    display: flex; justify-content: center; align-items: center;
+    background-color: #000; position: relative;
   }
   #banner img {
     max-height: 90px;
     width: auto;
   }
   #banner-username-logout {
-    position: absolute;
-    top: 10px;
-    right: 30px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-size: 18px;
-    color: white;
+    position: absolute; top: 10px; right: 30px;
+    display: flex; align-items: center; gap: 15px;
+    font-size: 18px; color: white;
   }
   #logout-btn {
-    background-color: #facc15;
-    border: none;
-    padding: 5px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    color: #162f44;
-    transition: background-color 0.3s;
+    background-color: #facc15; border: none; padding: 5px 12px;
+    border-radius: 4px; cursor: pointer; font-weight: 600;
+    color: #162f44; transition: background-color 0.3s;
   }
   #logout-btn:hover {
     background-color: #e6b70b;
   }
   #main {
-    display: flex;
-    flex: 1;
-    height: calc(100vh - 90px);
+    display: flex; flex: 1; height: calc(100vh - 90px);
   }
   #toolbar {
-    background: #162f44;
-    color: #cbd5e1;
-    width: 240px;
-    padding: 20px 20px 0 20px;
-    box-sizing: border-box;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    background: #162f44; color: #cbd5e1;
+    width: 260px; padding: 20px 20px 0 20px;
+    box-sizing: border-box; box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    display: flex; flex-direction: column; align-items: center;
   }
   #toolbar-logo {
-    width: 140px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px #facc15;
+    width: 140px; margin-bottom: 20px;
+    border-radius: 8px; box-shadow: 0 0 10px #facc15;
   }
   #toolbar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
+    list-style: none; padding: 0; margin: 0; width: 100%;
   }
   #toolbar ul li {
-    padding: 15px 25px;
-    cursor: pointer;
+    padding: 15px 25px; cursor: pointer;
     border-left: 4px solid transparent;
     transition: background-color 0.3s, border-color 0.3s;
-    font-weight: 600;
-    user-select: none;
+    font-weight: 600; user-select: none;
   }
   #toolbar ul li:hover {
-    background-color: #1f496d;
-    border-left-color: #facc15;
-    color: #fff;
+    background-color: #1f496d; border-left-color: #facc15; color: #fff;
   }
   #toolbar ul li.active {
-    background-color: #facc15;
-    color: #162f44;
-    border-left-color: #facc15;
+    background-color: #facc15; color: #162f44; border-left-color: #facc15;
   }
   #console {
-    background: #fff;
-    flex: 1;
-    padding: 25px 40px;
-    box-sizing: border-box;
-    overflow-y: auto;
-    box-shadow: inset 0 0 12px #d1d5db;
+    background: #fff; flex: 1; padding: 25px 40px;
+    box-sizing: border-box; overflow-y: auto; box-shadow: inset 0 0 12px #d1d5db;
     font-size: 16px;
   }
   #console h2 {
-    margin-top: 0;
-    font-weight: 700;
-    color: #0b1922;
-    border-bottom: 3px solid #facc15;
-    padding-bottom: 8px;
-    margin-bottom: 20px;
+    margin-top: 0; font-weight: 700; color: #0b1922;
+    border-bottom: 3px solid #facc15; padding-bottom: 8px; margin-bottom: 20px;
   }
   #console p {
     line-height: 1.5;
   }
   form {
-    max-width: 400px;
+    max-width: 460px;
   }
   label {
-    display: block;
-    margin-top: 15px;
-    font-weight: 600;
+    display: block; margin-top: 15px; font-weight: 600;
   }
   input[type="text"], input[type="password"], input[type="number"], select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
+    width: 100%; padding: 8px; margin-top: 5px;
+    box-sizing: border-box; border: 1px solid #ccc;
+    border-radius: 4px; font-size: 14px;
   }
-  input[type="submit"], button.action-btn, button.mine-btn {
-    margin-top: 20px;
-    background-color: #facc15;
-    border: none;
-    padding: 12px;
-    width: 100%;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 16px;
-    color: #162f44;
-    cursor: pointer;
+  input[type="submit"], button.action-btn, button.mine-btn, button.hire-emp-btn {
+    margin-top: 20px; background-color: #facc15;
+    border: none; padding: 12px; width: 100%; border-radius: 6px;
+    font-weight: 700; font-size: 16px; color: #162f44; cursor: pointer;
     transition: background-color 0.3s;
   }
-  input[type="submit"]:hover, button.action-btn:hover, button.mine-btn:hover {
+  input[type="submit"]:hover, button.action-btn:hover, button.mine-btn:hover, button.hire-emp-btn:hover {
     background-color: #e6b70b;
   }
   #login-error {
-    color: red;
-    margin-top: 10px;
+    color: red; margin-top: 10px;
   }
-  /* Business and mining dashboard styles */
-  .business-section {
-    max-width: 720px;
-    margin: auto;
+  /* Business advanced dashboard styles */
+  .section {
+    max-width: 720px; margin: auto;
   }
-  .business-header {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 15px;
-    color: #0b1922;
+  .section-header {
+    font-size: 22px; font-weight: 700; margin-bottom: 10px; color: #0b1922;
   }
-  .status-line {
-    margin: 12px 0;
+  .list-box {
+    border: 1px solid #ccc; border-radius: 6px; background: #fafafa;
+    padding: 12px 18px; margin-bottom: 20px;
   }
-  .inventory-list, .supplies-list, .employees-list, .research-list {
-    margin: 12px 0 20px 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 12px 18px;
-    background: #fafafa;
+  .list-box ul {
+    list-style: none; padding-left: 0; max-height: 140px; overflow-y: auto;
   }
-  .inventory-list ul, .supplies-list ul, .employees-list ul, .research-list ul {
-    list-style: none;
-    padding-left: 0;
-  }
-  .inventory-list li, .supplies-list li, .employees-list li, .research-list li {
+  .list-box li {
     margin-bottom: 8px;
   }
-  .section-title {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-weight: 600;
-    font-size: 18px;
-    border-bottom: 2px solid #facc15;
-    padding-bottom: 6px;
+  .button-row {
+    display: flex; gap: 12px;
   }
-  .inline-inputs {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+  .button-row button {
+    flex-grow: 1;
   }
-  .inline-inputs input[type=number] {
-    width: 90px;
+  table.employees-table {
+    width: 100%; border-collapse: collapse; margin-top: 10px;
+  }
+  table.employees-table th, table.employees-table td {
+    border: 1px solid #ccc; padding: 6px 10px; text-align: left;
+  }
+  table.employees-table th {
+    background-color: #facc15; color: #162f44;
   }
   .log-area {
-    margin-top: 20px;
-    background: #222;
-    color: #facc15;
-    padding: 12px;
-    border-radius: 6px;
-    height: 140px;
-    overflow-y: auto;
-    font-family: monospace;
-    font-size: 14px;
+    background: #222; color: #facc15; padding: 12px;
+    border-radius: 6px; height: 160px; overflow-y: auto;
+    font-family: monospace; font-size: 14px; white-space: pre-line;
   }
 </style>
 </head>
@@ -231,13 +155,13 @@
       <ul id="menu-list"></ul>
     </nav>
     <main id="console" tabindex="0" role="region" aria-live="polite">
-      <!-- Content gets dynamically loaded here -->
+      <!-- Content dynamically loaded -->
     </main>
   </div>
 </div>
 
 <script>
-  // Mock user database with added mining data
+  // Mock DB for players and CPU businesses
   const users = {
     admin: {
       password: 'admin123',
@@ -248,35 +172,122 @@
     player1: {
       password: 'player123',
       role: 'player',
-      profile: { username: 'PlayerOne', rank: 'Miner', level: 12 },
+      profile: { username: 'PlayerOne', rank: 'Investor', level: 15 },
       businesses: [
         {
           id: 1,
-          name: 'Iron Ore Mining Co.',
+          name: 'PlayerOne Mining Co.',
           type: 'Mining',
-          cash: 75000,
-          supplies: { Fuel: 50, Tools: 40, Chemicals: 30 },
-          employees: 5,
-          employeeEfficiency: 1.0, // Multiplier from research or management
+          cash: 120000,
+          supplies: { Fuel: 100, Tools: 80, Trucks: 5, Chemicals: 50 },
+          employees: [
+            { id: 101, name: 'Alice', position: 'Miner', skill: 70, education: 50 },
+            { id: 102, name: 'Bob', position: 'Engineer', skill: 85, education: 90 }
+          ],
           research: { efficiency: 0.1, quality: 0.05 },
-          inventory: { 'Raw Iron Ore': 100, 'Refined Iron Ore': 20 },
-          marketShare: 0 // To influence pricing later
+          inventory: { 'Raw Iron Ore': 200, 'Refined Iron Ore': 50 },
+          marketShare: 0
         }
       ]
     }
   };
 
-  // Global market data with dynamic pricing based on global supply
+  // CPU-controlled businesses with simplistic autonomous functions
+  const cpuBusinesses = [
+    {
+      id: 201,
+      name: 'AutoMine Mining Corp',
+      type: 'Mining',
+      cash: 500000,
+      supplies: { Fuel: 500, Tools: 400, Trucks: 30, Chemicals: 200 },
+      employees: [
+        { id: 301, name: 'CPU Miner John', position: 'Miner', skill: 75, education: 40 },
+        { id: 302, name: 'CPU Engineer Sue', position: 'Engineer', skill: 80, education: 85 }
+      ],
+      research: { efficiency: 0.15, quality: 0.12 },
+      inventory: { 'Raw Iron Ore': 1000, 'Refined Iron Ore': 300 },
+      marketShare: 2
+    },
+    {
+      id: 202,
+      name: 'FuelSupply Inc.',
+      type: 'Fuel Supplier',
+      cash: 800000,
+      supplies: {},
+      employees: [
+        { id: 401, name: 'CPU Sales Mike', position: 'Sales', skill: 90, education: 80 }
+      ],
+      research: { efficiency: 0, quality: 0 },
+      inventory: { Fuel: 10000 },
+      marketShare: 3
+    }
+  ];
+
+  // Market data: track current product prices & total supply across all companies
   const market = {
-    rawIronOre: { basePrice: 50, globalSupply: 500, currentPrice: 50 },
-    refinedIronOre: { basePrice: 120, globalSupply: 200, currentPrice: 120 },
-    updatePrices: function() {
-      // Basic supply-demand pricing: price decreases as supply increases
-      this.rawIronOre.currentPrice = Math.max(10, this.rawIronOre.basePrice * (1000 / (1000 + this.rawIronOre.globalSupply)));
-      this.refinedIronOre.currentPrice = Math.max(30, this.refinedIronOre.basePrice * (500 / (500 + this.refinedIronOre.globalSupply)));
+    prices: { 
+      'Raw Iron Ore': 55,
+      'Refined Iron Ore': 130,
+      'Fuel': 20,
+      'Tools': 40,
+      'Trucks': 5000,
+      'Chemicals': 25
+    },
+    globalSupply: {
+      'Raw Iron Ore': 0,
+      'Refined Iron Ore': 0,
+      'Fuel': 0,
+      'Tools': 0,
+      'Trucks': 0,
+      'Chemicals': 0
+    },
+    updateGlobalSupply: function() {
+      // Reset supply
+      for(const key in this.globalSupply) {
+        this.globalSupply[key] = 0;
+      }
+      // Sum all user businesses
+      for(const userKey in users) {
+        const user = users[userKey];
+        if(user.businesses) {
+          user.businesses.forEach(biz => {
+            for(const item in biz.inventory) {
+              if(this.globalSupply[item] !== undefined) {
+                this.globalSupply[item] += biz.inventory[item];
+              }
+            }
+            for(const supply in biz.supplies) {
+              if(this.globalSupply[supply] !== undefined) {
+                this.globalSupply[supply] += biz.supplies[supply];
+              }
+            }
+          });
+        }
+      }
+      // Add CPU businesses inventory
+      cpuBusinesses.forEach(biz => {
+        for(const item in biz.inventory) {
+          if(this.globalSupply[item] !== undefined) {
+            this.globalSupply[item] += biz.inventory[item];
+          }
+        }
+        for(const supply in biz.supplies) {
+          if(this.globalSupply[supply] !== undefined) {
+            this.globalSupply[supply] += biz.supplies[supply];
+          }
+        }
+      });
+      // Adjust prices inversely proportional to supply (simplified)
+      for(const product in this.prices) {
+        const basePrice = this.prices[product];
+        const supply = this.globalSupply[product];
+        const price = basePrice * (1000 / (1000 + supply));
+        this.prices[product] = Math.max(price, basePrice * 0.3);
+      }
     }
   };
 
+  // UI Elements references
   const bannerUsername = document.getElementById('username-display');
   const logoutBtn = document.getElementById('logout-btn');
   const toolbar = document.getElementById('toolbar');
@@ -285,15 +296,14 @@
 
   const mainMenus = ['Home', 'Profile', 'Mining', 'Market', 'Settings'];
 
-  // Basic templates
+  // Content fallback templates
   const contentMap = {
-    Home: '<h2>Home</h2><p>Welcome to Undercurrent! Explore your mining business and manage resources effectively to grow your empire.</p>',
+    Home: '<h2>Home</h2><p>Welcome to Undercurrent! Build your mining empire by managing employees, supplies, and production.</p>',
     Profile: '',
-    Settings: '<h2>Settings</h2><p>Configure your preferences and account settings here.</p>',
-    Market: '', // dynamically rendered
+    Settings: '<h2>Settings</h2><p>Configure your preferences and account settings.</p>'
   };
 
-  // Show login form
+  // Show login screen
   function showLoginForm() {
     toolbar.style.display = 'none';
     logoutBtn.style.display = 'none';
@@ -318,6 +328,7 @@
     });
   }
 
+  // Auth user
   function authenticateUser(username, password) {
     const errorDiv = document.getElementById('login-error');
     if(users[username] && users[username].password === password) {
@@ -330,6 +341,7 @@
     }
   }
 
+  // Load UI after login
   function loadUserUI(username, role) {
     bannerUsername.textContent = `Logged in as: ${username}`;
     logoutBtn.style.display = 'inline-block';
@@ -354,6 +366,7 @@
     addMenuListeners(username);
   }
 
+  // Add menu click and keyboard navigation
   function addMenuListeners(username) {
     const items = document.querySelectorAll('#menu-list li');
     items.forEach(item => {
@@ -376,17 +389,19 @@
     selectedItem.classList.add('active');
   }
 
+  // Main content updater
   function updateConsoleContent(name, username) {
+    market.updateGlobalSupply();
     if(name === 'Profile') {
       renderProfile(username);
     } else if(name === 'Mining') {
-      renderMiningDashboard(username);
+      renderMining(username);
     } else if(name === 'Market') {
       renderMarket(username);
     } else if(name === 'Admin') {
       consoleDiv.innerHTML = '<h2>Admin Panel</h2><p>Admin controls go here.</p>';
     } else {
-      consoleDiv.innerHTML = contentMap[name] || '<p>Content not available.</p>';
+      consoleDiv.innerHTML = contentMap[name] || '<p>Content unavailable.</p>';
     }
     consoleDiv.focus();
   }
@@ -401,96 +416,120 @@
     `;
   }
 
-  // Render mining dashboard with deep features
-  function renderMiningDashboard(username) {
-    const biz = users[username].businesses[0];
-    if(!biz) {
+  // Render mining business dashboard with employee and supplies management
+  function renderMining(username) {
+    const userBiz = users[username].businesses[0];
+    if(!userBiz) {
       consoleDiv.innerHTML = `
         <h2>Mining Business</h2>
-        <p>You don't have a mining business yet.</p>
+        <p>You don’t have a mining business yet.</p>
         <button class="action-btn" id="create-mining-btn">Create Iron Ore Mining Business</button>
       `;
-      document.getElementById('create-mining-btn').addEventListener('click', () => {
-        createMiningBusiness(username);
-      });
+      document.getElementById('create-mining-btn').addEventListener('click', () => createMiningBusiness(username));
       return;
     }
 
-    market.updatePrices();
+    const biz = userBiz;
 
-    consoleDiv.innerHTML = `
-      <h2>${biz.name}</h2>
-      <div class="status-line"><strong>Cash Balance:</strong> $${biz.cash.toLocaleString()}</div>
+    let html = `<h2>${biz.name}</h2>
+    <div><strong>Cash:</strong> $${biz.cash.toLocaleString()}</div>
 
-      <div class="supplies-section">
-        <h3 class="section-title">Supplies Inventory</h3>
-        <div class="supplies-list">
-          <ul>
-            <li>Fuel: ${biz.supplies.Fuel}</li>
-            <li>Tools: ${biz.supplies.Tools}</li>
-            <li>Chemicals: ${biz.supplies.Chemicals}</li>
-          </ul>
-        </div>
-        <button class="action-btn" id="buy-supplies-btn">Buy Supplies (Fuel, Tools, Chemicals for $1000 each)</button>
+    <div class="section">
+      <h3 class="section-header">Supplies</h3>
+      <div class="list-box">
+        <ul>
+          <li>Fuel: ${biz.supplies.Fuel}</li>
+          <li>Tools: ${biz.supplies.Tools}</li>
+          <li>Trucks: ${biz.supplies.Trucks}</li>
+          <li>Chemicals: ${biz.supplies.Chemicals}</li>
+        </ul>
+        <button class="action-btn" id="shop-supplies-btn">Shop Supplies</button>
       </div>
+    </div>
 
-      <div class="employees-section">
-        <h3 class="section-title">Employees</h3>
-        <p>Number of employees: ${biz.employees}</p>
-        <button class="action-btn" id="hire-employee-btn">Hire Employee ($5000 each)</button>
-      </div>
+    <div class="section">
+      <h3 class="section-header">Employees</h3>
+      <table class="employees-table">
+        <thead>
+          <tr><th>Name</th><th>Position</th><th>Skill</th><th>Education</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          ${biz.employees.map(emp => `
+            <tr>
+              <td>${emp.name}</td>
+              <td>${emp.position}</td>
+              <td>${emp.skill}</td>
+              <td>${emp.education}</td>
+              <td><button class="hire-emp-btn" data-empid="${emp.id}">Fire</button></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      <button class="action-btn" id="hire-employee-btn">Hire New Employee</button>
+    </div>
 
-      <div class="research-section">
-        <h3 class="section-title">Research & Development</h3>
-        <p>Efficiency Bonus: ${(biz.research.efficiency * 100).toFixed(1)}%</p>
-        <p>Quality Bonus: ${(biz.research.quality * 100).toFixed(1)}%</p>
-        <button class="action-btn" id="research-efficiency-btn">Research Efficiency Upgrade ($20,000)</button>
-        <button class="action-btn" id="research-quality-btn">Research Quality Upgrade ($20,000)</button>
-      </div>
+    <div class="section">
+      <h3 class="section-header">Research & Development</h3>
+      <p>Efficiency Bonus: ${(biz.research.efficiency * 100).toFixed(1)}%</p>
+      <p>Quality Bonus: ${(biz.research.quality * 100).toFixed(1)}%</p>
+      <button class="action-btn" id="research-efficiency-btn">Research Efficiency Upgrade ($20,000)</button>
+      <button class="action-btn" id="research-quality-btn">Research Quality Upgrade ($20,000)</button>
+    </div>
 
-      <div class="inventory-section">
-        <h3 class="section-title">Inventory</h3>
-        <div class="inventory-list">
-          <ul>
-            <li>Raw Iron Ore: ${biz.inventory['Raw Iron Ore']}</li>
-            <li>Refined Iron Ore: ${biz.inventory['Refined Iron Ore']}</li>
-          </ul>
-        </div>
-      </div>
+    <div class="section">
+      <h3 class="section-header">Inventory</h3>
+      <ul>
+        <li>Raw Iron Ore: ${biz.inventory['Raw Iron Ore']}</li>
+        <li>Refined Iron Ore: ${biz.inventory['Refined Iron Ore']}</li>
+      </ul>
+    </div>
 
-      <div class="production-controls">
-        <button class="mine-btn" id="start-mining-btn">Start Mining Operation (costs supplies and employees)</button>
-        <button class="action-btn" id="start-refining-btn">Refine Raw Ore to Refined Ore (costs Chemicals)</button>
-      </div>
+    <div class="section button-row">
+      <button class="mine-btn" id="start-mining-btn">Start Mining Operation</button>
+      <button class="action-btn" id="start-refining-btn">Start Refining</button>
+    </div>
 
-      <div class="market-price">
-        <h3 class="section-title">Market Prices</h3>
-        <p>Raw Iron Ore: $${market.rawIronOre.currentPrice.toFixed(2)} per unit (Global Supply: ${market.rawIronOre.globalSupply})</p>
-        <p>Refined Iron Ore: $${market.refinedIronOre.currentPrice.toFixed(2)} per unit (Global Supply: ${market.refinedIronOre.globalSupply})</p>
-      </div>
+    <div class="section">
+      <h3 class="section-header">Market Prices</h3>
+      <p>Raw Iron Ore: $${market.prices['Raw Iron Ore'].toFixed(2)} (Global Supply: ${market.globalSupply['Raw Iron Ore']})</p>
+      <p>Refined Iron Ore: $${market.prices['Refined Iron Ore'].toFixed(2)} (Global Supply: ${market.globalSupply['Refined Iron Ore']})</p>
+      <p>Fuel: $${market.prices['Fuel'].toFixed(2)} (Global Supply: ${market.globalSupply['Fuel']})</p>
+      <p>Tools: $${market.prices['Tools'].toFixed(2)} (Global Supply: ${market.globalSupply['Tools']})</p>
+      <p>Trucks: $${market.prices['Trucks'].toFixed(2)} (Global Supply: ${market.globalSupply['Trucks']})</p>
+      <p>Chemicals: $${market.prices['Chemicals'].toFixed(2)} (Global Supply: ${market.globalSupply['Chemicals']})</p>
+    </div>
 
-      <div class="log-area" id="mining-log" aria-live="polite" aria-atomic="true">
-        Mining log will appear here...
-      </div>
+    <div class="section log-area" id="mining-log" aria-live="polite" aria-atomic="true">
+      Mining log will appear here...
+    </div>
     `;
 
-    document.getElementById('buy-supplies-btn').addEventListener('click', () => buySupplies(username));
+    consoleDiv.innerHTML = html;
+
+    // Attach event listeners
+    document.getElementById('shop-supplies-btn').addEventListener('click', () => renderMarket(username));
     document.getElementById('hire-employee-btn').addEventListener('click', () => hireEmployee(username));
     document.getElementById('research-efficiency-btn').addEventListener('click', () => researchEfficiency(username));
     document.getElementById('research-quality-btn').addEventListener('click', () => researchQuality(username));
-    document.getElementById('start-mining-btn').addEventListener('click', () => startMiningOperation(username));
+    document.getElementById('start-mining-btn').addEventListener('click', () => startMining(username));
     document.getElementById('start-refining-btn').addEventListener('click', () => startRefining(username));
+
+    document.querySelectorAll('.hire-emp-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const empId = e.target.getAttribute('data-empid');
+        fireEmployee(username, parseInt(empId));
+      });
+    });
   }
 
+  // Create mining business boilerplate
   function createMiningBusiness(username) {
     const newBiz = {
       id: Date.now(),
-      name: 'Iron Ore Mining Co. ' + Date.now(),
+      name: 'Player Mining Co. ' + Date.now(),
       type: 'Mining',
       cash: 50000,
-      supplies: { Fuel: 20, Tools: 20, Chemicals: 10 },
-      employees: 3,
-      employeeEfficiency: 1.0,
+      supplies: { Fuel: 20, Tools: 20, Trucks: 3, Chemicals: 15 },
+      employees: [],
       research: { efficiency: 0.1, quality: 0.05 },
       inventory: { 'Raw Iron Ore': 0, 'Refined Iron Ore': 0 },
       marketShare: 0
@@ -499,98 +538,103 @@
     updateConsoleContent('Mining', username);
   }
 
-  function buySupplies(username) {
-    const biz = users[username].businesses[0];
-    if(biz.cash < 3000) {
-      alert('Not enough cash to buy all supplies.');
-      return;
-    }
-    biz.cash -= 3000;
-    biz.supplies.Fuel += 10;
-    biz.supplies.Tools += 10;
-    biz.supplies.Chemicals += 10;
-    logMiningEvent('Purchased 10 Fuel, Tools, Chemicals for $3000', username);
-    updateConsoleContent('Mining', username);
-  }
-
+  // Employee hiring with random stats (expand with real listings later)
   function hireEmployee(username) {
     const biz = users[username].businesses[0];
-    if(biz.cash < 5000) {
-      alert('Not enough cash to hire an employee.');
+    const cost = 7000;
+    if(biz.cash < cost) {
+      alert('Not enough cash to hire an employee');
       return;
     }
-    biz.cash -= 5000;
-    biz.employees += 1;
-    logMiningEvent('Hired one employee.', username);
+    const newEmpId = Date.now();
+    const positions = ['Miner', 'Engineer', 'Truck Driver', 'Mechanic'];
+    const pos = positions[Math.floor(Math.random() * positions.length)];
+    const skill = 50 + Math.floor(Math.random() * 50);
+    const education = 40 + Math.floor(Math.random() * 60);
+    const newEmp = { id: newEmpId, name: `Emp${newEmpId}`, position: pos, skill, education };
+    biz.employees.push(newEmp);
+    biz.cash -= cost;
+    logMiningEvent(`Hired new employee ${newEmp.name}, Position: ${pos}, Skill: ${skill}, Education: ${education}`, username);
     updateConsoleContent('Mining', username);
   }
 
+  // Fire employee by id
+  function fireEmployee(username, empId) {
+    const biz = users[username].businesses;
+    const index = biz.employees.findIndex(e => e.id === empId);
+    if(index !== -1) {
+      const fired = biz.employees.splice(index,1);
+      logMiningEvent(`Fired employee ${fired.name}`, username);
+      updateConsoleContent('Mining', username);
+    }
+  }
+
+  // Research upgrades
   function researchEfficiency(username) {
-    const biz = users[username].businesses[0];
-    if(biz.cash < 20000) {
-      alert('Not enough cash for efficiency research.');
-      return;
-    }
-    biz.cash -= 20000;
-    biz.research.efficiency += 0.05; // 5% improvement
-    logMiningEvent('Research completed: Efficiency upgraded by 5%.', username);
+    const biz = users[username].businesses;
+    const cost = 20000;
+    if(biz.cash < cost) { alert("Not enough cash for efficiency research."); return; }
+    biz.cash -= cost;
+    biz.research.efficiency += 0.05;
+    logMiningEvent("Efficiency research complete! +5%", username);
     updateConsoleContent('Mining', username);
   }
-
   function researchQuality(username) {
-    const biz = users[username].businesses[0];
-    if(biz.cash < 20000) {
-      alert('Not enough cash for quality research.');
-      return;
-    }
-    biz.cash -= 20000;
-    biz.research.quality += 0.03; // 3% improvement
-    logMiningEvent('Research completed: Quality upgraded by 3%.', username);
+    const biz = users[username].businesses;
+    const cost = 20000;
+    if(biz.cash < cost) { alert("Not enough cash for quality research."); return; }
+    biz.cash -= cost;
+    biz.research.quality += 0.03;
+    logMiningEvent("Quality research complete! +3%", username);
     updateConsoleContent('Mining', username);
   }
 
-  function startMiningOperation(username) {
-    const biz = users[username].businesses[0];
-    const requiredFuel = 5;
-    const requiredTools = 3;
-    const employeesNeeded = 1;
+  // Mining operation consumes supplies and employees, produces raw ore
+  function startMining(username) {
+    const biz = users[username].businesses;
+    const neededFuel = 5;
+    const neededTools = 3;
+    const neededTrucks = 1;
+    const employeesRequired = 2;
 
-    if(biz.supplies.Fuel < requiredFuel || biz.supplies.Tools < requiredTools) {
-      alert('Not enough supplies to start mining operation.');
+    if(biz.supplies.Fuel < neededFuel || biz.supplies.Tools < neededTools || biz.supplies.Trucks < neededTrucks) {
+      alert('Not enough supplies for mining operation.');
       return;
     }
-    if(biz.employees < employeesNeeded) {
-      alert('Not enough employees to run mining operation.');
+    if(biz.employees.length < employeesRequired) {
+      alert('Not enough employees for mining operation.');
       return;
     }
+
+    // Calculate employee effectiveness average
+    const avgSkill = biz.employees.reduce((sum,e) => sum + e.skill,0)/biz.employees.length;
+    const avgEducation = biz.employees.reduce((sum,e) => sum + e.education,0)/biz.employees.length;
 
     // Consume supplies
-    biz.supplies.Fuel -= requiredFuel;
-    biz.supplies.Tools -= requiredTools;
+    biz.supplies.Fuel -= neededFuel;
+    biz.supplies.Tools -= neededTools;
+    biz.supplies.Trucks -= neededTrucks;
 
-    // Calculate mined ore amount influenced by employees and research efficiency
-    const baseMined = 10;
-    const employeeBonus = biz.employees * 2;
-    const efficiencyBonus = baseMined * biz.research.efficiency;
-    
-    let minedAmount = baseMined + employeeBonus + efficiencyBonus;
-    minedAmount = Math.floor(minedAmount);
+    // Base mining amount influenced by research and employees skills
+    const baseYield = 15;
+    const efficiencyBonus = baseYield * biz.research.efficiency;
+    const skillBonus = (avgSkill / 100) * 10; // up to +10
+    const educationBonus = (avgEducation / 100) * 5; // up to +5
 
-    // Influence global market supply
-    market.rawIronOre.globalSupply += minedAmount;
+    let minedOre = baseYield + efficiencyBonus + skillBonus + educationBonus;
+    minedOre = Math.floor(minedOre);
 
-    // Add mined ore to inventory
-    biz.inventory['Raw Iron Ore'] += minedAmount;
-
-    logMiningEvent(`Mining operation completed! Mined ${minedAmount} units of Raw Iron Ore.`, username);
+    biz.inventory['Raw Iron Ore'] += minedOre;
+    market.globalSupply['Raw Iron Ore'] += minedOre;
+    logMiningEvent(`Mining complete! Produced ${minedOre} units of Raw Iron Ore.`, username);
     updateConsoleContent('Mining', username);
   }
 
+  // Refining operation
   function startRefining(username) {
     const biz = users[username].businesses[0];
     const requiredChemicals = 5;
     const rawOreRequired = 10;
-
     if(biz.supplies.Chemicals < requiredChemicals) {
       alert('Not enough Chemicals to refine ore.');
       return;
@@ -599,33 +643,173 @@
       alert('Not enough Raw Iron Ore to refine.');
       return;
     }
-
-    // Consume raw ore and chemicals
     biz.supplies.Chemicals -= requiredChemicals;
     biz.inventory['Raw Iron Ore'] -= rawOreRequired;
 
-    // Calculate amount of refined ore produced with quality bonus
     const baseRefined = 8;
     const qualityBonus = baseRefined * biz.research.quality;
-    let refinedAmount = baseRefined + qualityBonus;
-    refinedAmount = Math.floor(refinedAmount);
+    const refinedAmount = Math.floor(baseRefined + qualityBonus);
 
     biz.inventory['Refined Iron Ore'] += refinedAmount;
-
-    // Update global supply of refined ore
-    market.refinedIronOre.globalSupply += refinedAmount;
-
-    logMiningEvent(`Refined ${rawOreRequired} units of Raw Iron Ore into ${refinedAmount} units of Refined Iron Ore.`, username);
+    market.globalSupply['Refined Iron Ore'] += refinedAmount;
+    logMiningEvent(`Refined ${rawOreRequired} Raw Iron Ore into ${refinedAmount} Refined Iron Ore.`, username);
     updateConsoleContent('Mining', username);
   }
 
-  // Logging helper
+  // Market browsing to purchase supplies from CPU or user businesses
+  function renderMarket(username) {
+    // Build combined business inventory offering supplies
+    const supplyTypes = ['Fuel', 'Tools', 'Trucks', 'Chemicals'];
+    let sellers = [];
+
+    // CPU businesses selling supplies
+    cpuBusinesses.forEach(biz => {
+      supplyTypes.forEach(supply => {
+        const qty = biz.inventory[supply] || 0;
+        if(qty > 0) {
+          sellers.push({
+            bizId: biz.id,
+            bizName: biz.name,
+            item: supply,
+            qty,
+            price: market.prices[supply],
+            cpu: true
+          });
+        }
+      });
+    });
+
+    // Player businesses selling supplies (simplified: self sales blocked)
+    for(const userKey in users) {
+      if(userKey === username) continue;
+      const userBizs = users[userKey].businesses || [];
+      userBizs.forEach(biz => {
+        supplyTypes.forEach(supply => {
+          const qty = biz.inventory[supply] || 0;
+          if(qty > 0) {
+            sellers.push({
+              bizId: biz.id,
+              bizName: biz.name,
+              item: supply,
+              qty,
+              price: market.prices[supply],
+              cpu: false
+            });
+          }
+        });
+      });
+    }
+
+    const html = `
+      <h2>Market - Supplies</h2>
+      <p>Buy supplies needed to run your mining business.</p>
+      <div class="list-box">
+        <table style="width:100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background-color:#facc15; color:#162f44;">
+              <th>Seller</th><th>Item</th><th>Qty Available</th><th>Price Per Unit</th><th>Quantity to Buy</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${sellers.map((s,i) => `
+              <tr>
+                <td>${s.bizName} ${s.cpu ? '(CPU)' : ''}</td>
+                <td>${s.item}</td>
+                <td>${s.qty}</td>
+                <td>$${s.price.toFixed(2)}</td>
+                <td><input type="number" id="buy-qty-${i}" min="1" max="${s.qty}" value="1" style="width:60px" /></td>
+                <td><button class="action-btn" data-seller-index="${i}">Buy</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      <button class="action-btn" id="back-to-mining-btn">Back to Mining</button>
+      <div class="log-area" id="market-log" aria-live="polite" aria-atomic="true" style="margin-top:15px; height:100px;"></div>
+    `;
+    consoleDiv.innerHTML = html;
+
+    // Add buy buttons listeners
+    const buyButtons = consoleDiv.querySelectorAll('button[data-seller-index]');
+    buyButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-seller-index'));
+        const qtyInput = document.getElementById(`buy-qty-${idx}`);
+        const qty = parseInt(qtyInput.value);
+        if(qty <= 0) {
+          alert('Enter a valid quantity.');
+          return;
+        }
+        processPurchase(username, sellers[idx], qty);
+      });
+    });
+    document.getElementById('back-to-mining-btn').addEventListener('click', () => {
+      updateConsoleContent('Mining', username);
+    });
+  }
+
+  function processPurchase(buyerUsername, seller, quantity) {
+    const buyerBiz = users[buyerUsername].businesses[0];
+    if(!buyerBiz) {
+      alert('You need a mining business to buy supplies.');
+      return;
+    }
+    if(quantity > seller.qty) {
+      alert('Seller does not have that many items available.');
+      return;
+    }
+    const totalPrice = seller.price * quantity;
+    if(buyerBiz.cash < totalPrice) {
+      alert('Your business does not have enough cash.');
+      return;
+    }
+
+    // Deduct cash from buyer
+    buyerBiz.cash -= totalPrice;
+
+    // Add supplies to buyer
+    if(!buyerBiz.supplies[seller.item]) buyerBiz.supplies[seller.item] = 0;
+    buyerBiz.supplies[seller.item] += quantity;
+
+    // Deduct from seller inventory
+    if(seller.cpu) {
+      // Find cpu business and deduct inventory
+      const cpuBiz = cpuBusinesses.find(b => b.id === seller.bizId);
+      if(cpuBiz && cpuBiz.inventory[seller.item] >= quantity) {
+        cpuBiz.inventory[seller.item] -= quantity;
+        cpuBiz.cash += totalPrice;
+      }
+    } else {
+      // Player business seller
+      for(const userKey in users) {
+        const userBizs = users[userKey].businesses || [];
+        for(const biz of userBizs) {
+          if(biz.id === seller.bizId && biz.inventory[seller.item] >= quantity) {
+            biz.inventory[seller.item] -= quantity;
+            biz.cash += totalPrice;
+            break;
+          }
+        }
+      }
+    }
+
+    logMarketEvent(`${buyerBiz.name} bought ${quantity} units of ${seller.item} from ${seller.bizName} for $${totalPrice.toFixed(2)}.`, buyerUsername);
+    updateConsoleContent('Market', buyerUsername);
+  }
+
+  // Logs
   function logMiningEvent(message, username) {
     const logArea = document.getElementById('mining-log');
     if(logArea) {
       const timestamp = new Date().toLocaleTimeString();
-      const entry = `[${timestamp}] ${message}\n`;
-      logArea.textContent = entry + logArea.textContent;
+      logArea.textContent = `[${timestamp}] ${message}\n` + logArea.textContent;
+    }
+  }
+  function logMarketEvent(message, username) {
+    const logArea = document.getElementById('market-log');
+    if(logArea) {
+      const timestamp = new Date().toLocaleTimeString();
+      logArea.textContent = `[${timestamp}] ${message}\n` + logArea.textContent;
     }
   }
 
@@ -634,6 +818,26 @@
     localStorage.removeItem('userRole');
     showLoginForm();
   });
+
+  // AUTO CPU BUSINESS SIMULATION LOOP
+  function cpuBusinessSimulation() {
+    cpuBusinesses.forEach(biz => {
+      if(biz.type === 'Mining') {
+        // CPU mining operation every 30 seconds (demo)
+        const mined = 20 + (biz.research.efficiency * 100);
+        biz.inventory['Raw Iron Ore'] = (biz.inventory['Raw Iron Ore'] || 0) + mined;
+        market.globalSupply['Raw Iron Ore'] += mined;
+        biz.cash += mined * market.prices['Raw Iron Ore'] * 0.7; // CPU sells mined ore (70% income)
+      }
+      if(biz.type === 'Fuel Supplier') {
+        // CPU restocks fuel every cycle
+        biz.inventory['Fuel'] = (biz.inventory['Fuel'] || 0) + 100;
+        market.globalSupply['Fuel'] += 100;
+      }
+    });
+    market.updateGlobalSupply();
+  }
+  setInterval(cpuBusinessSimulation, 30000); // run every 30 seconds
 
   window.onload = function() {
     const username = localStorage.getItem('loggedInUser');
@@ -647,4 +851,3 @@
 </script>
 </body>
 </html>
-
