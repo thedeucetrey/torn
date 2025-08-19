@@ -5,15 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Torn-Like Game UI</title>
 <style>
-  /* Reset margins and padding */
+  /* Reset and base styles */
   body, html {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f0f0;
+    color: #222;
   }
 
-  /* Container covering entire viewport */
   #container {
     display: flex;
     flex-direction: column;
@@ -21,50 +22,77 @@
     overflow: hidden;
   }
 
-  /* Banner at the top */
+  /* Banner */
   #banner {
-    background: #222;
-    color: white;
-    padding: 15px;
-    font-size: 24px;
+    background: linear-gradient(90deg, #0b1922, #102a43);
+    color: #fff;
+    padding: 15px 30px;
+    font-size: 28px;
+    font-weight: bold;
     text-align: center;
-    flex: 0 0 60px; /* fixed height */
+    flex: 0 0 60px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
 
-  /* Main content below banner; horizontal layout */
+  /* Main content with horizontal layout */
   #main {
     display: flex;
     flex: 1;
     height: calc(100vh - 60px);
   }
 
-  /* Toolbar on the left */
+  /* Toolbar */
   #toolbar {
-    background: #333;
-    color: white;
-    width: 200px;
-    padding-top: 20px;
+    background: #162f44;
+    color: #cbd5e1;
+    width: 220px;
+    padding-top: 30px;
     box-sizing: border-box;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
   }
   #toolbar ul {
     list-style: none;
     padding: 0;
+    margin: 0;
   }
   #toolbar ul li {
-    padding: 12px 20px;
+    padding: 15px 25px;
     cursor: pointer;
-    border-bottom: 1px solid #444;
+    border-left: 4px solid transparent;
+    transition: background-color 0.3s, border-color 0.3s;
+    font-weight: 600;
+    user-select: none;
   }
   #toolbar ul li:hover {
-    background: #555;
+    background-color: #1f496d;
+    border-left-color: #facc15;
+    color: #fff;
+  }
+  #toolbar ul li.active {
+    background-color: #facc15;
+    color: #162f44;
+    border-left-color: #facc15;
   }
 
-  /* Console area fills remaining space */
+  /* Console */
   #console {
-    background: #eee;
+    background: #fff;
     flex: 1;
-    padding: 20px;
+    padding: 30px;
+    box-sizing: border-box;
     overflow-y: auto;
+    box-shadow: inset 0 0 10px #d1d5db;
+  }
+  #console h2 {
+    margin-top: 0;
+    font-weight: 700;
+    color: #0b1922;
+    border-bottom: 2px solid #facc15;
+    padding-bottom: 6px;
+  }
+  #console p {
+    font-size: 16px;
+    line-height: 1.5;
   }
 </style>
 </head>
@@ -72,20 +100,70 @@
   <div id="container">
     <div id="banner">Torn-Like Game Banner</div>
     <div id="main">
-      <div id="toolbar">
+      <nav id="toolbar" aria-label="Main Navigation">
         <ul>
-          <li>Home</li>
-          <li>Profile</li>
-          <li>Stats</li>
-          <li>Inventory</li>
-          <li>Settings</li>
+          <li class="active" tabindex="0">Home</li>
+          <li tabindex="0">Profile</li>
+          <li tabindex="0">Stats</li>
+          <li tabindex="0">Inventory</li>
+          <li tabindex="0">Settings</li>
         </ul>
-      </div>
-      <div id="console">
-        <h2>Welcome to the game console!</h2>
-        <p>This is where game content will appear.</p>
-      </div>
+      </nav>
+      <main id="console" tabindex="0" role="region" aria-live="polite">
+        <h2>Home</h2>
+        <p>Welcome to the game home page! Get started by exploring the game features from the toolbar.</p>
+      </main>
     </div>
   </div>
+
+  <script>
+    // Content for each toolbar item
+    const contentMap = {
+      Home: `
+        <h2>Home</h2>
+        <p>Welcome to the game home page! Get started by exploring the game features from the toolbar.</p>
+      `,
+      Profile: `
+        <h2>Profile</h2>
+        <p>View and edit your player profile here. Customize your avatar and personal details.</p>
+      `,
+      Stats: `
+        <h2>Stats</h2>
+        <p>Track your character's strength, defense, speed, and dexterity stats here.</p>
+      `,
+      Inventory: `
+        <h2>Inventory</h2>
+        <p>Manage your items, weapons, and resources within your inventory.</p>
+      `,
+      Settings: `
+        <h2>Settings</h2>
+        <p>Configure your game preferences, notifications, and account settings.</p>
+      `
+    };
+
+    const toolbarItems = document.querySelectorAll('#toolbar ul li');
+    const consoleDiv = document.getElementById('console');
+
+    toolbarItems.forEach(item => {
+      item.addEventListener('click', () => {
+        // Update active menu style
+        toolbarItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+
+        // Update console content
+        const key = item.textContent.trim();
+        consoleDiv.innerHTML = contentMap[key] || '<p>Content not found.</p>';
+        consoleDiv.focus();
+      });
+
+      // Allow navigation by keyboard (Enter key)
+      item.addEventListener('keydown', e => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          item.click();
+        }
+      });
+    });
+  </script>
 </body>
 </html>
