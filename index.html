@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Undercurrent Game UI with Login & Profile</title>
+<title>Undercurrent Game UI with Login, Profile & Stats</title>
 <style>
   /* Reset and base styles */
   body, html {
@@ -31,11 +31,6 @@
   #banner img {
     max-height: 90px;
     width: auto;
-  }
-  #banner-text {
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
   }
   #banner-username-logout {
     position: absolute;
@@ -133,7 +128,7 @@
     margin-top: 15px;
     font-weight: 600;
   }
-  input[type="text"], input[type="password"] {
+  input[type="text"], input[type="password"], input[type="number"] {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
@@ -142,7 +137,7 @@
     border-radius: 4px;
     font-size: 14px;
   }
-  input[type="submit"] {
+  input[type="submit"], button.train-btn {
     margin-top: 20px;
     background-color: #facc15;
     border: none;
@@ -155,7 +150,7 @@
     cursor: pointer;
     transition: background-color 0.3s;
   }
-  input[type="submit"]:hover {
+  input[type="submit"]:hover, button.train-btn:hover {
     background-color: #e6b70b;
   }
   #login-error {
@@ -198,6 +193,10 @@
     gap: 40px;
     font-size: 16px;
     padding: 5px 0;
+    align-items: center;
+  }
+  .stats-row div {
+    min-width: 110px;
   }
   .profile-details {
     margin-top: 25px;
@@ -246,8 +245,8 @@
         rank: 'Administrator',
         level: 99,
         fightingStats: { Strength: 99, Defense: 98, Speed: 97, Dexterity: 96 },
-        otherStats: { Energy: '100 / 100', Life: '100 / 100', Nerve: '100 / 100' },
-        details: { Location: 'Headquarters', Status: 'Online', Cash: '$1,000,000', Experience: '999,999 XP' }
+        otherStats: { Energy: 100, MaxEnergy: 100, Life: 100, MaxLife: 100, Nerve: 100, MaxNerve: 100 },
+        details: { Location: 'Headquarters', Status: 'Online', Cash: 1000000, Experience: 999999 }
       }
     },
     player1: { 
@@ -259,8 +258,8 @@
         rank: 'Thug',
         level: 12,
         fightingStats: { Strength: 75, Defense: 68, Speed: 70, Dexterity: 65 },
-        otherStats: { Energy: '80 / 100', Life: '95 / 100', Nerve: '60 / 100' },
-        details: { Location: 'Downtown', Status: 'Free', Cash: '$45,000', Experience: '12,345 XP' }
+        otherStats: { Energy: 80, MaxEnergy: 100, Life: 95, MaxLife: 100, Nerve: 60, MaxNerve: 100 },
+        details: { Location: 'Downtown', Status: 'Free', Cash: 45000, Experience: 12345 }
       }
     }
   };
@@ -273,7 +272,6 @@
 
   const contentMap = {
     Home: `<h2>Home</h2><p>Welcome to Undercurrent! Use the toolbar to explore the game.</p>`,
-    Stats: `<h2>Stats</h2><p>Track your character's attributes here.</p>`,
     Inventory: `<h2>Inventory</h2><p>Your items and resources.</p>`,
     Settings: `<h2>Settings</h2><p>Adjust your preferences and account settings.</p>`,
     Admin: `<h2>Admin Panel</h2><p>Manage game settings and user accounts here.</p>`
@@ -292,16 +290,16 @@
         <div class="profile-stats">
           <h3>Fighting Stats</h3>
           <div class="stats-row">
-            <div><strong>Strength:</strong> ${profile.fightingStats.Strength}</div>
-            <div><strong>Defense:</strong> ${profile.fightingStats.Defense}</div>
-            <div><strong>Speed:</strong> ${profile.fightingStats.Speed}</div>
-            <div><strong>Dexterity:</strong> ${profile.fightingStats.Dexterity}</div>
+            <div><strong>Strength:</strong> ${profile.fightingStats.Strength} <button class="train-btn" data-stat="Strength">Train</button></div>
+            <div><strong>Defense:</strong> ${profile.fightingStats.Defense} <button class="train-btn" data-stat="Defense">Train</button></div>
+            <div><strong>Speed:</strong> ${profile.fightingStats.Speed} <button class="train-btn" data-stat="Speed">Train</button></div>
+            <div><strong>Dexterity:</strong> ${profile.fightingStats.Dexterity} <button class="train-btn" data-stat="Dexterity">Train</button></div>
           </div>
           <h3>Other Stats</h3>
           <div class="stats-row">
-            <div><strong>Energy:</strong> ${profile.otherStats.Energy}</div>
-            <div><strong>Life:</strong> ${profile.otherStats.Life}</div>
-            <div><strong>Nerve:</strong> ${profile.otherStats.Nerve}</div>
+            <div><strong>Energy:</strong> ${profile.otherStats.Energy} / ${profile.otherStats.MaxEnergy}</div>
+            <div><strong>Life:</strong> ${profile.otherStats.Life} / ${profile.otherStats.MaxLife}</div>
+            <div><strong>Nerve:</strong> ${profile.otherStats.Nerve} / ${profile.otherStats.MaxNerve}</div>
           </div>
         </div>
         <div class="profile-details">
@@ -309,8 +307,8 @@
           <ul>
             <li><strong>Location:</strong> ${profile.details.Location}</li>
             <li><strong>Status:</strong> ${profile.details.Status}</li>
-            <li><strong>Cash:</strong> ${profile.details.Cash}</li>
-            <li><strong>Experience:</strong> ${profile.details.Experience}</li>
+            <li><strong>Cash:</strong> $${profile.details.Cash.toLocaleString()}</li>
+            <li><strong>Experience:</strong> ${profile.details.Experience.toLocaleString()} XP</li>
           </ul>
         </div>
       </div>`;
@@ -332,7 +330,6 @@
         <div id="login-error"></div>
       </form>
     `;
-
     document.getElementById('login-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
@@ -367,14 +364,12 @@
       if(item === 'Home') li.classList.add('active');
       menuList.appendChild(li);
     });
-
     if(role === 'admin') {
       const adminLi = document.createElement('li');
       adminLi.textContent = 'Admin';
       adminLi.tabIndex = 0;
       menuList.appendChild(adminLi);
     }
-
     updateConsoleContent('Home', username);
     addMenuListeners(username);
   }
@@ -382,6 +377,12 @@
   function updateConsoleContent(name, username = null) {
     if(name === 'Profile' && username) {
       consoleDiv.innerHTML = renderProfile(users[username].profile);
+      // Attach training buttons functionality
+      attachTrainButtons(username);
+    } else if (name === 'Stats' && username) {
+      // For simplicity, use profile display for Stats for now
+      consoleDiv.innerHTML = renderProfile(users[username].profile);
+      attachTrainButtons(username);
     } else {
       consoleDiv.innerHTML = contentMap[name] || '<p>Content not available.</p>';
     }
@@ -415,6 +416,29 @@
     localStorage.removeItem('userRole');
     showLoginForm();
   });
+
+  // Attach functionality to train buttons in stats display
+  function attachTrainButtons(username) {
+    const buttons = document.querySelectorAll('button.train-btn');
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const stat = button.getAttribute('data-stat');
+        trainStat(username, stat);
+      });
+    });
+  }
+
+  // Increase stat by 1 point and update display and user data
+  function trainStat(username, stat) {
+    if(!users[username]) return;
+    // Example limit stat to max 100
+    if(users[username].profile.fightingStats[stat] < 100) {
+      users[username].profile.fightingStats[stat] += 1;
+      updateConsoleContent('Profile', username);
+    } else {
+      alert(`${stat} is already at maximum value.`);
+    }
+  }
 
   window.onload = function() {
     const username = localStorage.getItem('loggedInUser');
