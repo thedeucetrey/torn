@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Torn-Like Game UI with Login & Profile</title>
+<title>Undercurrent Game UI with Login & Profile</title>
 <style>
   /* Reset and base styles */
   body, html {
@@ -21,21 +21,31 @@
     overflow: hidden;
   }
   #banner {
-    background: linear-gradient(90deg, #0b1922, #102a43);
-    color: #fff;
-    padding: 15px 30px;
-    font-size: 28px;
-    font-weight: bold;
-    text-align: center;
-    flex: 0 0 60px;
+    flex: 0 0 90px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    background-color: #000;
   }
-  #username-display {
+  #banner img {
+    max-height: 90px;
+    width: auto;
+  }
+  #banner-text {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  #banner-username-logout {
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
     font-size: 18px;
-    font-weight: normal;
+    color: white;
   }
   #logout-btn {
     background-color: #facc15;
@@ -53,20 +63,30 @@
   #main {
     display: flex;
     flex: 1;
-    height: calc(100vh - 60px);
+    height: calc(100vh - 90px);
   }
   #toolbar {
     background: #162f44;
     color: #cbd5e1;
     width: 220px;
-    padding-top: 30px;
+    padding: 20px 20px 0 20px;
     box-sizing: border-box;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #toolbar-logo {
+    width: 140px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #facc15;
   }
   #toolbar ul {
     list-style: none;
     padding: 0;
     margin: 0;
+    width: 100%;
   }
   #toolbar ul li {
     padding: 15px 25px;
@@ -194,13 +214,16 @@
 </head>
 <body>
   <div id="container">
-    <div id="banner">
-      <div>Torn-Like Game Banner</div>
-      <div id="username-display"></div>
-      <button id="logout-btn" style="display:none;">Logout</button>
-    </div>
+    <header id="banner" role="banner">
+      <img src="undercurrent_banner_728x90.png" alt="Undercurrent Banner" />
+      <div id="banner-username-logout" aria-live="polite">
+        <div id="username-display"></div>
+        <button id="logout-btn" style="display:none;" aria-label="Logout">Logout</button>
+      </div>
+    </header>
     <div id="main">
       <nav id="toolbar" aria-label="Main Navigation" style="display:none;">
+        <img id="toolbar-logo" src="2f1feed3-7496-4292-b14f-0360853a9e0a.png" alt="Undercurrent Logo" />
         <ul id="menu-list">
           <!-- Dynamic menu items -->
         </ul>
@@ -212,7 +235,7 @@
   </div>
 
 <script>
-  // Mock user database (for testing only)
+  // Mock user database for testing
   const users = {
     admin: { 
       password: 'admin123', 
@@ -248,16 +271,14 @@
   const consoleDiv = document.getElementById('console');
   const menuList = document.getElementById('menu-list');
 
-  // Content templates for menu items, profile is dynamic so set separately
   const contentMap = {
-    Home: `<h2>Home</h2><p>Welcome to the game home page! Explore the game features using the toolbar.</p>`,
-    Stats: `<h2>Stats</h2><p>Track your character's attributes like strength, defense, speed, and dexterity.</p>`,
+    Home: `<h2>Home</h2><p>Welcome to Undercurrent! Use the toolbar to explore the game.</p>`,
+    Stats: `<h2>Stats</h2><p>Track your character's attributes here.</p>`,
     Inventory: `<h2>Inventory</h2><p>Your items and resources.</p>`,
-    Settings: `<h2>Settings</h2><p>Adjust your game preferences and account settings.</p>`,
-    Admin: `<h2>Admin Panel</h2><p>Manage the game setup and user accounts here (admin only).</p>`
+    Settings: `<h2>Settings</h2><p>Adjust your preferences and account settings.</p>`,
+    Admin: `<h2>Admin Panel</h2><p>Manage game settings and user accounts here.</p>`
   };
 
-  // Render Profile HTML dynamically from user profile data
   function renderProfile(profile) {
     return `
       <div class="profile-container">
@@ -295,7 +316,6 @@
       </div>`;
   }
 
-  // Show login form in console
   function showLoginForm() {
     toolbar.style.display = 'none';
     logoutBtn.style.display = 'none';
@@ -321,7 +341,6 @@
     });
   }
 
-  // Authenticate user based on mock DB
   function authenticateUser(username, password) {
     const errorDiv = document.getElementById('login-error');
     if(users[username] && users[username].password === password) {
@@ -334,13 +353,11 @@
     }
   }
 
-  // Load UI for logged-in user
   function loadUserUI(username, role) {
     bannerUsername.textContent = `Logged in as: ${username}`;
     logoutBtn.style.display = 'inline-block';
-    toolbar.style.display = 'block';
+    toolbar.style.display = 'flex';
 
-    // Build menu dynamically
     const baseMenus = ['Home', 'Profile', 'Stats', 'Inventory', 'Settings'];
     menuList.innerHTML = '';
     baseMenus.forEach(item => {
@@ -359,14 +376,11 @@
     }
 
     updateConsoleContent('Home', username);
-
     addMenuListeners(username);
   }
 
-  // Update console content by menu item & username for dynamic profile
   function updateConsoleContent(name, username = null) {
     if(name === 'Profile' && username) {
-      // Render the profile from user data
       consoleDiv.innerHTML = renderProfile(users[username].profile);
     } else {
       consoleDiv.innerHTML = contentMap[name] || '<p>Content not available.</p>';
@@ -374,7 +388,6 @@
     consoleDiv.focus();
   }
 
-  // Add click and keydown event listeners for menu navigation
   function addMenuListeners(username) {
     const items = document.querySelectorAll('#menu-list li');
     items.forEach(item => {
@@ -382,7 +395,6 @@
         setActiveMenu(item);
         updateConsoleContent(item.textContent, username);
       });
-
       item.addEventListener('keydown', e => {
         if(e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -392,21 +404,18 @@
     });
   }
 
-  // Set single active menu item highlight
   function setActiveMenu(selectedItem) {
     const items = document.querySelectorAll('#menu-list li');
     items.forEach(item => item.classList.remove('active'));
     selectedItem.classList.add('active');
   }
 
-  // Logout action handler
   logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('loggedInUser');
     localStorage.removeItem('userRole');
     showLoginForm();
   });
 
-  // On page load - check for logged in user
   window.onload = function() {
     const username = localStorage.getItem('loggedInUser');
     const role = localStorage.getItem('userRole');
