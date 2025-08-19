@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Torn-Like Game UI</title>
+<title>Torn-Like Game UI with Login</title>
 <style>
   /* Reset and base styles */
   body, html {
@@ -14,15 +14,12 @@
     background-color: #f0f0f0;
     color: #222;
   }
-
   #container {
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
   }
-
-  /* Banner */
   #banner {
     background: linear-gradient(90deg, #0b1922, #102a43);
     color: #fff;
@@ -32,16 +29,32 @@
     text-align: center;
     flex: 0 0 60px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
-
-  /* Main content with horizontal layout */
+  #username-display {
+    font-size: 18px;
+    font-weight: normal;
+  }
+  #logout-btn {
+    background-color: #facc15;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #162f44;
+    transition: background-color 0.3s;
+  }
+  #logout-btn:hover {
+    background-color: #e6b70b;
+  }
   #main {
     display: flex;
     flex: 1;
     height: calc(100vh - 60px);
   }
-
-  /* Toolbar */
   #toolbar {
     background: #162f44;
     color: #cbd5e1;
@@ -73,8 +86,6 @@
     color: #162f44;
     border-left-color: #facc15;
   }
-
-  /* Console */
   #console {
     background: #fff;
     flex: 1;
@@ -94,14 +105,55 @@
     font-size: 16px;
     line-height: 1.5;
   }
+  form {
+    max-width: 300px;
+  }
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+  }
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  input[type="submit"] {
+    margin-top: 20px;
+    background-color: #facc15;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 16px;
+    color: #162f44;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  input[type="submit"]:hover {
+    background-color: #e6b70b;
+  }
+  #login-error {
+    color: red;
+    margin-top: 10px;
+  }
 </style>
 </head>
 <body>
   <div id="container">
-    <div id="banner">Torn-Like Game Banner</div>
+    <div id="banner">
+      <div>Torn-Like Game Banner</div>
+      <div id="username-display"></div>
+      <button id="logout-btn" style="display:none;">Logout</button>
+    </div>
     <div id="main">
-      <nav id="toolbar" aria-label="Main Navigation">
-        <ul>
+      <nav id="toolbar" aria-label="Main Navigation" style="display:none;">
+        <ul id="menu-list">
           <li class="active" tabindex="0">Home</li>
           <li tabindex="0">Profile</li>
           <li tabindex="0">Stats</li>
@@ -110,60 +162,152 @@
         </ul>
       </nav>
       <main id="console" tabindex="0" role="region" aria-live="polite">
-        <h2>Home</h2>
-        <p>Welcome to the game home page! Get started by exploring the game features from the toolbar.</p>
+        <!-- Login form will go here by default -->
       </main>
     </div>
   </div>
 
-  <script>
-    // Content for each toolbar item
-    const contentMap = {
-      Home: `
-        <h2>Home</h2>
-        <p>Welcome to the game home page! Get started by exploring the game features from the toolbar.</p>
-      `,
-      Profile: `
-        <h2>Profile</h2>
-        <p>View and edit your player profile here. Customize your avatar and personal details.</p>
-      `,
-      Stats: `
-        <h2>Stats</h2>
-        <p>Track your character's strength, defense, speed, and dexterity stats here.</p>
-      `,
-      Inventory: `
-        <h2>Inventory</h2>
-        <p>Manage your items, weapons, and resources within your inventory.</p>
-      `,
-      Settings: `
-        <h2>Settings</h2>
-        <p>Configure your game preferences, notifications, and account settings.</p>
-      `
-    };
+<script>
+  // Simple user database - for testing only (never store passwords like this in real apps!)
+  const users = {
+    admin: { password: 'admin123', role: 'admin' },
+    player1: { password: 'player123', role: 'player' }
+  };
 
-    const toolbarItems = document.querySelectorAll('#toolbar ul li');
-    const consoleDiv = document.getElementById('console');
+  const bannerUsername = document.getElementById('username-display');
+  const logoutBtn = document.getElementById('logout-btn');
+  const toolbar = document.getElementById('toolbar');
+  const consoleDiv = document.getElementById('console');
+  const menuList = document.getElementById('menu-list');
 
-    toolbarItems.forEach(item => {
+  // Content blocks for logged-in users
+  const contentMap = {
+    Home: `<h2>Home</h2><p>Welcome to the game home page! Explore the game features using the toolbar.</p>`,
+    Profile: `<h2>Profile</h2><p>View and edit your player profile here.</p>`,
+    Stats: `<h2>Stats</h2><p>Track your character's attributes like strength, defense, speed, and dexterity.</p>`,
+    Inventory: `<h2>Inventory</h2><p>Your items and resources.</p>`,
+    Settings: `<h2>Settings</h2><p>Adjust your game preferences and account settings.</p>`,
+    Admin: `<h2>Admin Panel</h2><p>Manage the game setup and user accounts here (admin only).</p>`
+  };
+
+  // Show the login form
+  function showLoginForm() {
+    toolbar.style.display = 'none';
+    logoutBtn.style.display = 'none';
+    bannerUsername.textContent = '';
+    menuList.innerHTML = ''; // clear menu
+    consoleDiv.innerHTML = `
+      <h2>Login</h2>
+      <form id="login-form" autocomplete="off">
+        <label for="username">Username:</label>
+        <input id="username" type="text" required autofocus />
+        <label for="password">Password:</label>
+        <input id="password" type="password" required />
+        <input type="submit" value="Login" />
+        <div id="login-error"></div>
+      </form>
+    `;
+
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      authenticateUser(username, password);
+    });
+  }
+
+  // Authenticate user (simple check)
+  function authenticateUser(username, password) {
+    const errorDiv = document.getElementById('login-error');
+    if(users[username] && users[username].password === password) {
+      localStorage.setItem('loggedInUser', username);
+      localStorage.setItem('userRole', users[username].role);
+      errorDiv.textContent = '';
+      loadUserUI(username, users[username].role);
+    } else {
+      errorDiv.textContent = 'Invalid username or password.';
+    }
+  }
+
+  // Load UI for logged-in user
+  function loadUserUI(username, role) {
+    bannerUsername.textContent = `Logged in as: ${username}`;
+    logoutBtn.style.display = 'inline-block';
+    toolbar.style.display = 'block';
+
+    // Build menu dynamically for user role
+    const baseMenus = ['Home', 'Profile', 'Stats', 'Inventory', 'Settings'];
+    menuList.innerHTML = '';
+    baseMenus.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      li.tabIndex = 0;
+      if(item === 'Home') li.classList.add('active');
+      menuList.appendChild(li);
+    });
+
+    if(role === 'admin') {
+      const adminLi = document.createElement('li');
+      adminLi.textContent = 'Admin';
+      adminLi.tabIndex = 0;
+      menuList.appendChild(adminLi);
+    }
+
+    // Show home content initially
+    updateConsoleContent('Home');
+
+    // Add menu click handlers
+    addMenuListeners();
+  }
+
+  // Update console content by menu name
+  function updateConsoleContent(name) {
+    consoleDiv.innerHTML = contentMap[name] || '<p>Content not available.</p>';
+    consoleDiv.focus();
+  }
+
+  // Add click & keyboard event listeners to menu items
+  function addMenuListeners() {
+    const items = document.querySelectorAll('#menu-list li');
+    items.forEach(item => {
       item.addEventListener('click', () => {
-        // Update active menu style
-        toolbarItems.forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-
-        // Update console content
-        const key = item.textContent.trim();
-        consoleDiv.innerHTML = contentMap[key] || '<p>Content not found.</p>';
-        consoleDiv.focus();
+        setActiveMenu(item);
+        updateConsoleContent(item.textContent);
       });
-
-      // Allow navigation by keyboard (Enter key)
       item.addEventListener('keydown', e => {
-        if (e.key === "Enter" || e.key === " ") {
+        if(e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           item.click();
         }
       });
     });
-  </script>
+  }
+
+  // Set clicked menu item active
+  function setActiveMenu(selectedItem) {
+    const items = document.querySelectorAll('#menu-list li');
+    items.forEach(item => item.classList.remove('active'));
+    selectedItem.classList.add('active');
+  }
+
+  // Logout function
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('loggedInUser');
+    localStorage.removeItem('userRole');
+    showLoginForm();
+  });
+
+  // On page load - check if logged in
+  window.onload = function() {
+    const username = localStorage.getItem('loggedInUser');
+    const role = localStorage.getItem('userRole');
+    if(username && role) {
+      loadUserUI(username, role);
+    } else {
+      showLoginForm();
+    }
+  };
+</script>
 </body>
 </html>
+
