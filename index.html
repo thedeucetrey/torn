@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Torn-Like Game UI</title>
+<style>
+  /* Reset margins and padding */
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+  }
+
+  /* Container covering entire viewport */
+  #container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Banner at the top */
+  #banner {
+    background: #222;
+    color: white;
+    padding: 15px;
+    font-size: 24px;
+    text-align: center;
+    flex: 0 0 60px; /* fixed height */
+  }
+
+  /* Main content below banner; horizontal layout */
+  #main {
+    display: flex;
+    flex: 1;
+    height: calc(100vh - 60px);
+  }
+
+  /* Toolbar on the left */
+  #toolbar {
+    background: #333;
+    color: white;
+    width: 200px;
+    padding-top: 20px;
+    box-sizing: border-box;
+  }
+  #toolbar ul {
+    list-style: none;
+    padding: 0;
+  }
+  #toolbar ul li {
+    padding: 12px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #444;
+  }
+  #toolbar ul li:hover {
+    background: #555;
+  }
+
+  /* Console area fills remaining space */
+  #console {
+    background: #eee;
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+</style>
+</head>
+<body>
+  <div id="container">
+    <div id="banner">Torn-Like Game Banner</div>
+    <div id="main">
+      <div id="toolbar">
+        <ul>
+          <li>Home</li>
+          <li>Profile</li>
+          <li>Stats</li>
+          <li>Inventory</li>
+          <li>Settings</li>
+        </ul>
+      </div>
+      <div id="console">
+        <h2>Welcome to the game console!</h2>
+        <p>This is where game content will appear.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
