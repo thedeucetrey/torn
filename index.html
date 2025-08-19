@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Torn-Like Game UI with Login</title>
+<title>Torn-Like Game UI with Login & Profile</title>
 <style>
   /* Reset and base styles */
   body, html {
@@ -142,6 +142,54 @@
     color: red;
     margin-top: 10px;
   }
+  /* Profile Styles */
+  .profile-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #222;
+  }
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #facc15;
+  }
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    box-shadow: 0 0 8px #facc15;
+  }
+  .profile-username {
+    font-size: 28px;
+    margin: 0;
+    color: #0b1922;
+  }
+  .profile-rank {
+    font-size: 14px;
+    color: #555;
+    font-weight: 600;
+  }
+  .profile-stats {
+    margin-top: 20px;
+  }
+  .stats-row {
+    display: flex;
+    gap: 40px;
+    font-size: 16px;
+    padding: 5px 0;
+  }
+  .profile-details {
+    margin-top: 25px;
+  }
+  .profile-details ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .profile-details ul li {
+    font-size: 16px;
+    padding: 6px 0;
+  }
 </style>
 </head>
 <body>
@@ -154,24 +202,44 @@
     <div id="main">
       <nav id="toolbar" aria-label="Main Navigation" style="display:none;">
         <ul id="menu-list">
-          <li class="active" tabindex="0">Home</li>
-          <li tabindex="0">Profile</li>
-          <li tabindex="0">Stats</li>
-          <li tabindex="0">Inventory</li>
-          <li tabindex="0">Settings</li>
+          <!-- Dynamic menu items -->
         </ul>
       </nav>
       <main id="console" tabindex="0" role="region" aria-live="polite">
-        <!-- Login form will go here by default -->
+        <!-- Login or page content -->
       </main>
     </div>
   </div>
 
 <script>
-  // Simple user database - for testing only (never store passwords like this in real apps!)
+  // Mock user database (for testing only)
   const users = {
-    admin: { password: 'admin123', role: 'admin' },
-    player1: { password: 'player123', role: 'player' }
+    admin: { 
+      password: 'admin123', 
+      role: 'admin',
+      profile: {
+        username: 'Admin',
+        avatar: 'https://via.placeholder.com/100?text=Admin',
+        rank: 'Administrator',
+        level: 99,
+        fightingStats: { Strength: 99, Defense: 98, Speed: 97, Dexterity: 96 },
+        otherStats: { Energy: '100 / 100', Life: '100 / 100', Nerve: '100 / 100' },
+        details: { Location: 'Headquarters', Status: 'Online', Cash: '$1,000,000', Experience: '999,999 XP' }
+      }
+    },
+    player1: { 
+      password: 'player123', 
+      role: 'player',
+      profile: {
+        username: 'PlayerOne',
+        avatar: 'https://via.placeholder.com/100?text=Player1',
+        rank: 'Thug',
+        level: 12,
+        fightingStats: { Strength: 75, Defense: 68, Speed: 70, Dexterity: 65 },
+        otherStats: { Energy: '80 / 100', Life: '95 / 100', Nerve: '60 / 100' },
+        details: { Location: 'Downtown', Status: 'Free', Cash: '$45,000', Experience: '12,345 XP' }
+      }
+    }
   };
 
   const bannerUsername = document.getElementById('username-display');
@@ -180,22 +248,59 @@
   const consoleDiv = document.getElementById('console');
   const menuList = document.getElementById('menu-list');
 
-  // Content blocks for logged-in users
+  // Content templates for menu items, profile is dynamic so set separately
   const contentMap = {
     Home: `<h2>Home</h2><p>Welcome to the game home page! Explore the game features using the toolbar.</p>`,
-    Profile: `<h2>Profile</h2><p>View and edit your player profile here.</p>`,
     Stats: `<h2>Stats</h2><p>Track your character's attributes like strength, defense, speed, and dexterity.</p>`,
     Inventory: `<h2>Inventory</h2><p>Your items and resources.</p>`,
     Settings: `<h2>Settings</h2><p>Adjust your game preferences and account settings.</p>`,
     Admin: `<h2>Admin Panel</h2><p>Manage the game setup and user accounts here (admin only).</p>`
   };
 
-  // Show the login form
+  // Render Profile HTML dynamically from user profile data
+  function renderProfile(profile) {
+    return `
+      <div class="profile-container">
+        <div class="profile-header">
+          <img src="${profile.avatar}" alt="Player Avatar" class="profile-avatar"/>
+          <div>
+            <h2 class="profile-username">${profile.username}</h2>
+            <div class="profile-rank">Level ${profile.level} | Rank: ${profile.rank}</div>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <h3>Fighting Stats</h3>
+          <div class="stats-row">
+            <div><strong>Strength:</strong> ${profile.fightingStats.Strength}</div>
+            <div><strong>Defense:</strong> ${profile.fightingStats.Defense}</div>
+            <div><strong>Speed:</strong> ${profile.fightingStats.Speed}</div>
+            <div><strong>Dexterity:</strong> ${profile.fightingStats.Dexterity}</div>
+          </div>
+          <h3>Other Stats</h3>
+          <div class="stats-row">
+            <div><strong>Energy:</strong> ${profile.otherStats.Energy}</div>
+            <div><strong>Life:</strong> ${profile.otherStats.Life}</div>
+            <div><strong>Nerve:</strong> ${profile.otherStats.Nerve}</div>
+          </div>
+        </div>
+        <div class="profile-details">
+          <h3>Details</h3>
+          <ul>
+            <li><strong>Location:</strong> ${profile.details.Location}</li>
+            <li><strong>Status:</strong> ${profile.details.Status}</li>
+            <li><strong>Cash:</strong> ${profile.details.Cash}</li>
+            <li><strong>Experience:</strong> ${profile.details.Experience}</li>
+          </ul>
+        </div>
+      </div>`;
+  }
+
+  // Show login form in console
   function showLoginForm() {
     toolbar.style.display = 'none';
     logoutBtn.style.display = 'none';
     bannerUsername.textContent = '';
-    menuList.innerHTML = ''; // clear menu
+    menuList.innerHTML = '';
     consoleDiv.innerHTML = `
       <h2>Login</h2>
       <form id="login-form" autocomplete="off">
@@ -216,7 +321,7 @@
     });
   }
 
-  // Authenticate user (simple check)
+  // Authenticate user based on mock DB
   function authenticateUser(username, password) {
     const errorDiv = document.getElementById('login-error');
     if(users[username] && users[username].password === password) {
@@ -235,7 +340,7 @@
     logoutBtn.style.display = 'inline-block';
     toolbar.style.display = 'block';
 
-    // Build menu dynamically for user role
+    // Build menu dynamically
     const baseMenus = ['Home', 'Profile', 'Stats', 'Inventory', 'Settings'];
     menuList.innerHTML = '';
     baseMenus.forEach(item => {
@@ -253,27 +358,31 @@
       menuList.appendChild(adminLi);
     }
 
-    // Show home content initially
-    updateConsoleContent('Home');
+    updateConsoleContent('Home', username);
 
-    // Add menu click handlers
-    addMenuListeners();
+    addMenuListeners(username);
   }
 
-  // Update console content by menu name
-  function updateConsoleContent(name) {
-    consoleDiv.innerHTML = contentMap[name] || '<p>Content not available.</p>';
+  // Update console content by menu item & username for dynamic profile
+  function updateConsoleContent(name, username = null) {
+    if(name === 'Profile' && username) {
+      // Render the profile from user data
+      consoleDiv.innerHTML = renderProfile(users[username].profile);
+    } else {
+      consoleDiv.innerHTML = contentMap[name] || '<p>Content not available.</p>';
+    }
     consoleDiv.focus();
   }
 
-  // Add click & keyboard event listeners to menu items
-  function addMenuListeners() {
+  // Add click and keydown event listeners for menu navigation
+  function addMenuListeners(username) {
     const items = document.querySelectorAll('#menu-list li');
     items.forEach(item => {
       item.addEventListener('click', () => {
         setActiveMenu(item);
-        updateConsoleContent(item.textContent);
+        updateConsoleContent(item.textContent, username);
       });
+
       item.addEventListener('keydown', e => {
         if(e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -283,25 +392,25 @@
     });
   }
 
-  // Set clicked menu item active
+  // Set single active menu item highlight
   function setActiveMenu(selectedItem) {
     const items = document.querySelectorAll('#menu-list li');
     items.forEach(item => item.classList.remove('active'));
     selectedItem.classList.add('active');
   }
 
-  // Logout function
+  // Logout action handler
   logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('loggedInUser');
     localStorage.removeItem('userRole');
     showLoginForm();
   });
 
-  // On page load - check if logged in
+  // On page load - check for logged in user
   window.onload = function() {
     const username = localStorage.getItem('loggedInUser');
     const role = localStorage.getItem('userRole');
-    if(username && role) {
+    if(username && role && users[username]) {
       loadUserUI(username, role);
     } else {
       showLoginForm();
@@ -310,4 +419,3 @@
 </script>
 </body>
 </html>
-
