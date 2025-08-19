@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Undercurrent Game UI with Login, Profile & Stats</title>
+<title>Undercurrent Game UI with Business Pyramid</title>
 <style>
   /* Reset and base styles */
   body, html {
@@ -121,14 +121,14 @@
     line-height: 1.5;
   }
   form {
-    max-width: 300px;
+    max-width: 400px;
   }
   label {
     display: block;
     margin-top: 15px;
     font-weight: 600;
   }
-  input[type="text"], input[type="password"], input[type="number"] {
+  input[type="text"], input[type="password"], input[type="number"], select {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
@@ -137,7 +137,7 @@
     border-radius: 4px;
     font-size: 14px;
   }
-  input[type="submit"], button.train-btn {
+  input[type="submit"], button.action-btn {
     margin-top: 20px;
     background-color: #facc15;
     border: none;
@@ -150,64 +150,42 @@
     cursor: pointer;
     transition: background-color 0.3s;
   }
-  input[type="submit"]:hover, button.train-btn:hover {
+  input[type="submit"]:hover, button.action-btn:hover {
     background-color: #e6b70b;
   }
   #login-error {
     color: red;
     margin-top: 10px;
   }
-  /* Profile Styles */
-  .profile-container {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #222;
+  /* Business Dashboard Styles */
+  .business-container {
+    max-width: 700px;
+    margin: auto;
   }
-  .profile-header {
+  .business-header {
+    margin-bottom: 20px;
+  }
+  .business-list, .market-list {
+    margin-top: 10px;
+  }
+  .business-item, .market-item {
     display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid #ddd;
     align-items: center;
-    gap: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #facc15;
   }
-  .profile-avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 12px;
-    box-shadow: 0 0 8px #facc15;
+  .business-item:last-child, .market-item:last-child {
+    border-bottom: none;
   }
-  .profile-username {
-    font-size: 28px;
-    margin: 0;
-    color: #0b1922;
+  .business-item div, .market-item div {
+    flex: 1;
   }
-  .profile-rank {
-    font-size: 14px;
-    color: #555;
-    font-weight: 600;
-  }
-  .profile-stats {
+  .production-controls {
     margin-top: 20px;
   }
-  .stats-row {
-    display: flex;
-    gap: 40px;
-    font-size: 16px;
-    padding: 5px 0;
-    align-items: center;
-  }
-  .stats-row div {
-    min-width: 110px;
-  }
-  .profile-details {
-    margin-top: 25px;
-  }
-  .profile-details ul {
-    list-style: none;
-    padding-left: 0;
-  }
-  .profile-details ul li {
-    font-size: 16px;
-    padding: 6px 0;
+  .production-controls label {
+    font-weight: 600;
   }
 </style>
 </head>
@@ -223,45 +201,62 @@
     <div id="main">
       <nav id="toolbar" aria-label="Main Navigation" style="display:none;">
         <img id="toolbar-logo" src="2f1feed3-7496-4292-b14f-0360853a9e0a.png" alt="Undercurrent Logo" />
-        <ul id="menu-list">
-          <!-- Dynamic menu items -->
-        </ul>
+        <ul id="menu-list"></ul>
       </nav>
       <main id="console" tabindex="0" role="region" aria-live="polite">
-        <!-- Login or page content -->
+        <!-- Login or other content goes here -->
       </main>
     </div>
   </div>
 
 <script>
-  // Mock user database for testing
+  // Mock user database and business data
   const users = {
-    admin: { 
-      password: 'admin123', 
+    admin: {
+      password: 'admin123',
       role: 'admin',
       profile: {
         username: 'Admin',
         avatar: 'https://via.placeholder.com/100?text=Admin',
         rank: 'Administrator',
         level: 99,
-        fightingStats: { Strength: 99, Defense: 98, Speed: 97, Dexterity: 96 },
-        otherStats: { Energy: 100, MaxEnergy: 100, Life: 100, MaxLife: 100, Nerve: 100, MaxNerve: 100 },
-        details: { Location: 'Headquarters', Status: 'Online', Cash: 1000000, Experience: 999999 }
-      }
+      },
+      businesses: []
     },
-    player1: { 
-      password: 'player123', 
+    player1: {
+      password: 'player123',
       role: 'player',
       profile: {
         username: 'PlayerOne',
         avatar: 'https://via.placeholder.com/100?text=Player1',
-        rank: 'Thug',
+        rank: 'Entrepreneur',
         level: 12,
-        fightingStats: { Strength: 75, Defense: 68, Speed: 70, Dexterity: 65 },
-        otherStats: { Energy: 80, MaxEnergy: 100, Life: 95, MaxLife: 100, Nerve: 60, MaxNerve: 100 },
-        details: { Location: 'Downtown', Status: 'Free', Cash: 45000, Experience: 12345 }
-      }
+      },
+      businesses: [
+        {
+          id: 1,
+          name: 'Iron Ore Mining Co.',
+          type: 'Mining',
+          inventory: { 'Iron Ore': 100 },
+          productionQueue: [],
+          cash: 50000
+        }
+      ]
     }
+  };
+
+  // Item definitions with production recipes
+  const items = {
+    'Iron Ore': { type: 'raw' },
+    'Steel': { type: 'component', requires: { 'Iron Ore': 5 } },
+    'Brake Part': { type: 'component', requires: { 'Steel': 2 } },
+    'Paint': { type: 'component', requires: { 'Chemicals': 3 } },
+    'Car': { type: 'product', requires: { 'Brake Part': 4, 'Paint': 20, 'Steel': 50 } }
+  };
+
+  // Chemicals for paint example, held by a business or open market (simplified)
+  const marketInventory = {
+    'Chemicals': { price: 10, quantity: 1000 }
   };
 
   const bannerUsername = document.getElementById('username-display');
@@ -270,50 +265,16 @@
   const consoleDiv = document.getElementById('console');
   const menuList = document.getElementById('menu-list');
 
+  const mainMenus = ['Home', 'Profile', 'Business', 'Market', 'Settings'];
+
+  // Basic content templates
   const contentMap = {
-    Home: `<h2>Home</h2><p>Welcome to Undercurrent! Use the toolbar to explore the game.</p>`,
-    Inventory: `<h2>Inventory</h2><p>Your items and resources.</p>`,
-    Settings: `<h2>Settings</h2><p>Adjust your preferences and account settings.</p>`,
-    Admin: `<h2>Admin Panel</h2><p>Manage game settings and user accounts here.</p>`
+    Home: '<h2>Home</h2><p>Welcome to Undercurrent economy simulation! Explore your businesses, the market, and build your empire.</p>',
+    Profile: '', // dynamic user profile
+    Settings: '<h2>Settings</h2><p>Update your preferences here.</p>'
   };
 
-  function renderProfile(profile) {
-    return `
-      <div class="profile-container">
-        <div class="profile-header">
-          <img src="${profile.avatar}" alt="Player Avatar" class="profile-avatar"/>
-          <div>
-            <h2 class="profile-username">${profile.username}</h2>
-            <div class="profile-rank">Level ${profile.level} | Rank: ${profile.rank}</div>
-          </div>
-        </div>
-        <div class="profile-stats">
-          <h3>Fighting Stats</h3>
-          <div class="stats-row">
-            <div><strong>Strength:</strong> ${profile.fightingStats.Strength} <button class="train-btn" data-stat="Strength">Train</button></div>
-            <div><strong>Defense:</strong> ${profile.fightingStats.Defense} <button class="train-btn" data-stat="Defense">Train</button></div>
-            <div><strong>Speed:</strong> ${profile.fightingStats.Speed} <button class="train-btn" data-stat="Speed">Train</button></div>
-            <div><strong>Dexterity:</strong> ${profile.fightingStats.Dexterity} <button class="train-btn" data-stat="Dexterity">Train</button></div>
-          </div>
-          <h3>Other Stats</h3>
-          <div class="stats-row">
-            <div><strong>Energy:</strong> ${profile.otherStats.Energy} / ${profile.otherStats.MaxEnergy}</div>
-            <div><strong>Life:</strong> ${profile.otherStats.Life} / ${profile.otherStats.MaxLife}</div>
-            <div><strong>Nerve:</strong> ${profile.otherStats.Nerve} / ${profile.otherStats.MaxNerve}</div>
-          </div>
-        </div>
-        <div class="profile-details">
-          <h3>Details</h3>
-          <ul>
-            <li><strong>Location:</strong> ${profile.details.Location}</li>
-            <li><strong>Status:</strong> ${profile.details.Status}</li>
-            <li><strong>Cash:</strong> $${profile.details.Cash.toLocaleString()}</li>
-            <li><strong>Experience:</strong> ${profile.details.Experience.toLocaleString()} XP</li>
-          </ul>
-        </div>
-      </div>`;
-  }
-
+  // Show login form
   function showLoginForm() {
     toolbar.style.display = 'none';
     logoutBtn.style.display = 'none';
@@ -338,6 +299,7 @@
     });
   }
 
+  // Authenticate user
   function authenticateUser(username, password) {
     const errorDiv = document.getElementById('login-error');
     if(users[username] && users[username].password === password) {
@@ -350,45 +312,33 @@
     }
   }
 
+  // Load user interface after login
   function loadUserUI(username, role) {
     bannerUsername.textContent = `Logged in as: ${username}`;
     logoutBtn.style.display = 'inline-block';
     toolbar.style.display = 'flex';
 
-    const baseMenus = ['Home', 'Profile', 'Stats', 'Inventory', 'Settings'];
     menuList.innerHTML = '';
-    baseMenus.forEach(item => {
+    mainMenus.forEach(menu => {
       const li = document.createElement('li');
-      li.textContent = item;
+      li.textContent = menu;
       li.tabIndex = 0;
-      if(item === 'Home') li.classList.add('active');
+      if(menu === 'Home') li.classList.add('active');
       menuList.appendChild(li);
     });
+
     if(role === 'admin') {
       const adminLi = document.createElement('li');
       adminLi.textContent = 'Admin';
       adminLi.tabIndex = 0;
       menuList.appendChild(adminLi);
     }
+
     updateConsoleContent('Home', username);
     addMenuListeners(username);
   }
 
-  function updateConsoleContent(name, username = null) {
-    if(name === 'Profile' && username) {
-      consoleDiv.innerHTML = renderProfile(users[username].profile);
-      // Attach training buttons functionality
-      attachTrainButtons(username);
-    } else if (name === 'Stats' && username) {
-      // For simplicity, use profile display for Stats for now
-      consoleDiv.innerHTML = renderProfile(users[username].profile);
-      attachTrainButtons(username);
-    } else {
-      consoleDiv.innerHTML = contentMap[name] || '<p>Content not available.</p>';
-    }
-    consoleDiv.focus();
-  }
-
+  // Add event listeners for menus
   function addMenuListeners(username) {
     const items = document.querySelectorAll('#menu-list li');
     items.forEach(item => {
@@ -405,10 +355,138 @@
     });
   }
 
+  // Set active menu visual
   function setActiveMenu(selectedItem) {
     const items = document.querySelectorAll('#menu-list li');
     items.forEach(item => item.classList.remove('active'));
     selectedItem.classList.add('active');
+  }
+
+  // Update main console area
+  function updateConsoleContent(name, username) {
+    if(name === 'Profile') {
+      // Show simple profile info
+      const p = users[username].profile;
+      consoleDiv.innerHTML = `
+        <h2>Profile</h2>
+        <p><strong>Username:</strong> ${p.username}</p>
+        <p><strong>Rank:</strong> ${p.rank}</p>
+        <p><strong>Level:</strong> ${p.level}</p>
+      `;
+    } else if (name === 'Business') {
+      renderBusinessDashboard(username);
+    } else if(name === 'Market') {
+      renderMarket(username);
+    } else if(name === 'Admin') {
+      consoleDiv.innerHTML = '<h2>Admin Panel</h2><p>Admin controls go here.</p>';
+    } else {
+      consoleDiv.innerHTML = contentMap[name] || '<p>Content not available.</p>';
+    }
+    consoleDiv.focus();
+  }
+
+  // Render business dashboard UI for user
+  function renderBusinessDashboard(username) {
+    const user = users[username];
+    if(!user.businesses.length) {
+      consoleDiv.innerHTML = `
+        <h2>Your Businesses</h2>
+        <p>You don’t own any businesses yet.</p>
+        <button class="action-btn" id="create-business-btn">Create Mining Business</button>
+      `;
+      document.getElementById('create-business-btn').addEventListener('click', () => {
+        createBusiness(username);
+      });
+      return;
+    }
+    let html = '<h2>Your Businesses</h2>';
+    user.businesses.forEach(biz => {
+      html += `
+        <div class="business-container">
+          <div class="business-header"><strong>${biz.name}</strong> (${biz.type})</div>
+          <div><strong>Cash:</strong> $${biz.cash.toLocaleString()}</div>
+          <h3>Inventory</h3>
+          <div class="business-list">
+            ${Object.entries(biz.inventory).map(([item, qty]) => `<div>${item}: ${qty}</div>`).join('')}
+          </div>
+          <button class="action-btn" data-bizid="${biz.id}" onclick="startMining(event)">Mine Iron Ore (+10 per run) - Cost $1000</button>
+        </div>
+        <hr/>
+      `;
+    });
+    consoleDiv.innerHTML = html;
+  }
+
+  // Simple function to create a mining business for demo
+  function createBusiness(username) {
+    const newBiz = {
+      id: Date.now(),
+      name: 'Iron Ore Mining Co. ' + Date.now(),
+      type: 'Mining',
+      inventory: { 'Iron Ore': 0 },
+      productionQueue: [],
+      cash: 10000
+    };
+    users[username].businesses.push(newBiz);
+    updateConsoleContent('Business', username);
+  }
+
+  // Simple mining action, adds Iron Ore and deducts cash
+  window.startMining = function(event) {
+    const btn = event.target;
+    const bizId = Number(btn.getAttribute('data-bizid'));
+    const username = localStorage.getItem('loggedInUser');
+    const biz = users[username].businesses.find(b => b.id === bizId);
+    if(!biz) return;
+
+    if(biz.cash < 1000) {
+      alert('Not enough cash to start mining.');
+      return;
+    }
+    biz.cash -= 1000;
+    biz.inventory['Iron Ore'] = (biz.inventory['Iron Ore'] || 0) + 10;
+    alert('Mining complete! 10 Iron Ore added.');
+    updateConsoleContent('Business', username);
+  };
+
+  // Render simple market UI for demo
+  function renderMarket(username) {
+    let html = `
+      <h2>Market</h2>
+      <p>Buy Chemicals needed for manufacturing.</p>
+      <div class="market-list">
+        <div class="market-item"><div>Chemicals</div><div>Price: $${marketInventory['Chemicals'].price}</div><div>Quantity Available: ${marketInventory['Chemicals'].quantity}</div><button class="action-btn" id="buy-chemicals-btn">Buy 10</button></div>
+      </div>
+    `;
+    consoleDiv.innerHTML = html;
+    document.getElementById('buy-chemicals-btn').addEventListener('click', () => {
+      buyChemical(username, 10);
+    });
+  }
+
+  // Buy chemicals from market and add to user's first business (simplified)
+  function buyChemical(username, qty) {
+    const user = users[username];
+    if(!user.businesses.length) {
+      alert('You need a business to buy materials.');
+      return;
+    }
+    const marketQty = marketInventory['Chemicals'].quantity;
+    if(qty > marketQty) {
+      alert('Not enough Chemicals in the market.');
+      return;
+    }
+    const biz = user.businesses[0];
+    const price = marketInventory['Chemicals'].price * qty;
+    if(biz.cash < price) {
+      alert('Business does not have enough cash!');
+      return;
+    }
+    marketInventory['Chemicals'].quantity -= qty;
+    biz.cash -= price;
+    biz.inventory['Chemicals'] = (biz.inventory['Chemicals'] || 0) + qty;
+    alert(`Purchased ${qty} Chemicals for $${price}`);
+    updateConsoleContent('Business', username);
   }
 
   logoutBtn.addEventListener('click', () => {
@@ -416,29 +494,6 @@
     localStorage.removeItem('userRole');
     showLoginForm();
   });
-
-  // Attach functionality to train buttons in stats display
-  function attachTrainButtons(username) {
-    const buttons = document.querySelectorAll('button.train-btn');
-    buttons.forEach(button => {
-      button.addEventListener('click', () => {
-        const stat = button.getAttribute('data-stat');
-        trainStat(username, stat);
-      });
-    });
-  }
-
-  // Increase stat by 1 point and update display and user data
-  function trainStat(username, stat) {
-    if(!users[username]) return;
-    // Example limit stat to max 100
-    if(users[username].profile.fightingStats[stat] < 100) {
-      users[username].profile.fightingStats[stat] += 1;
-      updateConsoleContent('Profile', username);
-    } else {
-      alert(`${stat} is already at maximum value.`);
-    }
-  }
 
   window.onload = function() {
     const username = localStorage.getItem('loggedInUser');
@@ -452,3 +507,4 @@
 </script>
 </body>
 </html>
+
