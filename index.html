@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Undercurrent Game UI with Business Pyramid</title>
+<title>Undercurrent Game UI - Deep Mining & Economy</title>
 <style>
   /* Reset and base styles */
   body, html {
@@ -27,6 +27,7 @@
     justify-content: center;
     align-items: center;
     background-color: #000;
+    position: relative;
   }
   #banner img {
     max-height: 90px;
@@ -63,7 +64,7 @@
   #toolbar {
     background: #162f44;
     color: #cbd5e1;
-    width: 220px;
+    width: 240px;
     padding: 20px 20px 0 20px;
     box-sizing: border-box;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
@@ -104,20 +105,21 @@
   #console {
     background: #fff;
     flex: 1;
-    padding: 30px;
+    padding: 25px 40px;
     box-sizing: border-box;
     overflow-y: auto;
-    box-shadow: inset 0 0 10px #d1d5db;
+    box-shadow: inset 0 0 12px #d1d5db;
+    font-size: 16px;
   }
   #console h2 {
     margin-top: 0;
     font-weight: 700;
     color: #0b1922;
-    border-bottom: 2px solid #facc15;
-    padding-bottom: 6px;
+    border-bottom: 3px solid #facc15;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
   }
   #console p {
-    font-size: 16px;
     line-height: 1.5;
   }
   form {
@@ -137,126 +139,142 @@
     border-radius: 4px;
     font-size: 14px;
   }
-  input[type="submit"], button.action-btn {
+  input[type="submit"], button.action-btn, button.mine-btn {
     margin-top: 20px;
     background-color: #facc15;
     border: none;
-    padding: 10px;
+    padding: 12px;
     width: 100%;
-    border-radius: 4px;
+    border-radius: 6px;
     font-weight: 700;
     font-size: 16px;
     color: #162f44;
     cursor: pointer;
     transition: background-color 0.3s;
   }
-  input[type="submit"]:hover, button.action-btn:hover {
+  input[type="submit"]:hover, button.action-btn:hover, button.mine-btn:hover {
     background-color: #e6b70b;
   }
   #login-error {
     color: red;
     margin-top: 10px;
   }
-  /* Business Dashboard Styles */
-  .business-container {
-    max-width: 700px;
+  /* Business and mining dashboard styles */
+  .business-section {
+    max-width: 720px;
     margin: auto;
   }
   .business-header {
-    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #0b1922;
   }
-  .business-list, .market-list {
-    margin-top: 10px;
+  .status-line {
+    margin: 12px 0;
   }
-  .business-item, .market-item {
+  .inventory-list, .supplies-list, .employees-list, .research-list {
+    margin: 12px 0 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 12px 18px;
+    background: #fafafa;
+  }
+  .inventory-list ul, .supplies-list ul, .employees-list ul, .research-list ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .inventory-list li, .supplies-list li, .employees-list li, .research-list li {
+    margin-bottom: 8px;
+  }
+  .section-title {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 18px;
+    border-bottom: 2px solid #facc15;
+    padding-bottom: 6px;
+  }
+  .inline-inputs {
     display: flex;
-    justify-content: space-between;
-    padding: 8px 12px;
-    border-bottom: 1px solid #ddd;
+    gap: 10px;
     align-items: center;
   }
-  .business-item:last-child, .market-item:last-child {
-    border-bottom: none;
+  .inline-inputs input[type=number] {
+    width: 90px;
   }
-  .business-item div, .market-item div {
-    flex: 1;
-  }
-  .production-controls {
+  .log-area {
     margin-top: 20px;
-  }
-  .production-controls label {
-    font-weight: 600;
+    background: #222;
+    color: #facc15;
+    padding: 12px;
+    border-radius: 6px;
+    height: 140px;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 14px;
   }
 </style>
 </head>
 <body>
-  <div id="container">
-    <header id="banner" role="banner">
-      <img src="undercurrent_banner_728x90.png" alt="Undercurrent Banner" />
-      <div id="banner-username-logout" aria-live="polite">
-        <div id="username-display"></div>
-        <button id="logout-btn" style="display:none;" aria-label="Logout">Logout</button>
-      </div>
-    </header>
-    <div id="main">
-      <nav id="toolbar" aria-label="Main Navigation" style="display:none;">
-        <img id="toolbar-logo" src="2f1feed3-7496-4292-b14f-0360853a9e0a.png" alt="Undercurrent Logo" />
-        <ul id="menu-list"></ul>
-      </nav>
-      <main id="console" tabindex="0" role="region" aria-live="polite">
-        <!-- Login or other content goes here -->
-      </main>
+<div id="container">
+  <header id="banner" role="banner">
+    <img src="undercurrent_banner_728x90.png" alt="Undercurrent Banner" />
+    <div id="banner-username-logout" aria-live="polite">
+      <div id="username-display"></div>
+      <button id="logout-btn" style="display:none;" aria-label="Logout">Logout</button>
     </div>
+  </header>
+  <div id="main">
+    <nav id="toolbar" aria-label="Main Navigation" style="display:none;">
+      <img id="toolbar-logo" src="2f1feed3-7496-4292-b14f-0360853a9e0a.png" alt="Undercurrent Logo" />
+      <ul id="menu-list"></ul>
+    </nav>
+    <main id="console" tabindex="0" role="region" aria-live="polite">
+      <!-- Content gets dynamically loaded here -->
+    </main>
   </div>
+</div>
 
 <script>
-  // Mock user database and business data
+  // Mock user database with added mining data
   const users = {
     admin: {
       password: 'admin123',
       role: 'admin',
-      profile: {
-        username: 'Admin',
-        avatar: 'https://via.placeholder.com/100?text=Admin',
-        rank: 'Administrator',
-        level: 99,
-      },
+      profile: { username: 'Admin', rank: 'Administrator', level: 99 },
       businesses: []
     },
     player1: {
       password: 'player123',
       role: 'player',
-      profile: {
-        username: 'PlayerOne',
-        avatar: 'https://via.placeholder.com/100?text=Player1',
-        rank: 'Entrepreneur',
-        level: 12,
-      },
+      profile: { username: 'PlayerOne', rank: 'Miner', level: 12 },
       businesses: [
         {
           id: 1,
           name: 'Iron Ore Mining Co.',
           type: 'Mining',
-          inventory: { 'Iron Ore': 100 },
-          productionQueue: [],
-          cash: 50000
+          cash: 75000,
+          supplies: { Fuel: 50, Tools: 40, Chemicals: 30 },
+          employees: 5,
+          employeeEfficiency: 1.0, // Multiplier from research or management
+          research: { efficiency: 0.1, quality: 0.05 },
+          inventory: { 'Raw Iron Ore': 100, 'Refined Iron Ore': 20 },
+          marketShare: 0 // To influence pricing later
         }
       ]
     }
   };
 
-  // Item definitions with production recipes
-  const items = {
-    'Iron Ore': { type: 'raw' },
-    'Steel': { type: 'component', requires: { 'Iron Ore': 5 } },
-    'Brake Part': { type: 'component', requires: { 'Steel': 2 } },
-    'Paint': { type: 'component', requires: { 'Chemicals': 3 } },
-    'Car': { type: 'product', requires: { 'Brake Part': 4, 'Paint': 20, 'Steel': 50 } }
-  };
-
-  // Chemicals for paint example, held by a business or open market (simplified)
-  const marketInventory = {
-    'Chemicals': { price: 10, quantity: 1000 }
+  // Global market data with dynamic pricing based on global supply
+  const market = {
+    rawIronOre: { basePrice: 50, globalSupply: 500, currentPrice: 50 },
+    refinedIronOre: { basePrice: 120, globalSupply: 200, currentPrice: 120 },
+    updatePrices: function() {
+      // Basic supply-demand pricing: price decreases as supply increases
+      this.rawIronOre.currentPrice = Math.max(10, this.rawIronOre.basePrice * (1000 / (1000 + this.rawIronOre.globalSupply)));
+      this.refinedIronOre.currentPrice = Math.max(30, this.refinedIronOre.basePrice * (500 / (500 + this.refinedIronOre.globalSupply)));
+    }
   };
 
   const bannerUsername = document.getElementById('username-display');
@@ -265,13 +283,14 @@
   const consoleDiv = document.getElementById('console');
   const menuList = document.getElementById('menu-list');
 
-  const mainMenus = ['Home', 'Profile', 'Business', 'Market', 'Settings'];
+  const mainMenus = ['Home', 'Profile', 'Mining', 'Market', 'Settings'];
 
-  // Basic content templates
+  // Basic templates
   const contentMap = {
-    Home: '<h2>Home</h2><p>Welcome to Undercurrent economy simulation! Explore your businesses, the market, and build your empire.</p>',
-    Profile: '', // dynamic user profile
-    Settings: '<h2>Settings</h2><p>Update your preferences here.</p>'
+    Home: '<h2>Home</h2><p>Welcome to Undercurrent! Explore your mining business and manage resources effectively to grow your empire.</p>',
+    Profile: '',
+    Settings: '<h2>Settings</h2><p>Configure your preferences and account settings here.</p>',
+    Market: '', // dynamically rendered
   };
 
   // Show login form
@@ -291,7 +310,7 @@
         <div id="login-error"></div>
       </form>
     `;
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    document.getElementById('login-form').addEventListener('submit', e => {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
@@ -299,7 +318,6 @@
     });
   }
 
-  // Authenticate user
   function authenticateUser(username, password) {
     const errorDiv = document.getElementById('login-error');
     if(users[username] && users[username].password === password) {
@@ -312,7 +330,6 @@
     }
   }
 
-  // Load user interface after login
   function loadUserUI(username, role) {
     bannerUsername.textContent = `Logged in as: ${username}`;
     logoutBtn.style.display = 'inline-block';
@@ -326,7 +343,6 @@
       if(menu === 'Home') li.classList.add('active');
       menuList.appendChild(li);
     });
-
     if(role === 'admin') {
       const adminLi = document.createElement('li');
       adminLi.textContent = 'Admin';
@@ -338,7 +354,6 @@
     addMenuListeners(username);
   }
 
-  // Add event listeners for menus
   function addMenuListeners(username) {
     const items = document.querySelectorAll('#menu-list li');
     items.forEach(item => {
@@ -355,26 +370,17 @@
     });
   }
 
-  // Set active menu visual
   function setActiveMenu(selectedItem) {
     const items = document.querySelectorAll('#menu-list li');
     items.forEach(item => item.classList.remove('active'));
     selectedItem.classList.add('active');
   }
 
-  // Update main console area
   function updateConsoleContent(name, username) {
     if(name === 'Profile') {
-      // Show simple profile info
-      const p = users[username].profile;
-      consoleDiv.innerHTML = `
-        <h2>Profile</h2>
-        <p><strong>Username:</strong> ${p.username}</p>
-        <p><strong>Rank:</strong> ${p.rank}</p>
-        <p><strong>Level:</strong> ${p.level}</p>
-      `;
-    } else if (name === 'Business') {
-      renderBusinessDashboard(username);
+      renderProfile(username);
+    } else if(name === 'Mining') {
+      renderMiningDashboard(username);
     } else if(name === 'Market') {
       renderMarket(username);
     } else if(name === 'Admin') {
@@ -385,108 +391,242 @@
     consoleDiv.focus();
   }
 
-  // Render business dashboard UI for user
-  function renderBusinessDashboard(username) {
-    const user = users[username];
-    if(!user.businesses.length) {
+  function renderProfile(username) {
+    const p = users[username].profile;
+    consoleDiv.innerHTML = `
+      <h2>Profile</h2>
+      <p><strong>Username:</strong> ${p.username}</p>
+      <p><strong>Rank:</strong> ${p.rank}</p>
+      <p><strong>Level:</strong> ${p.level}</p>
+    `;
+  }
+
+  // Render mining dashboard with deep features
+  function renderMiningDashboard(username) {
+    const biz = users[username].businesses[0];
+    if(!biz) {
       consoleDiv.innerHTML = `
-        <h2>Your Businesses</h2>
-        <p>You don’t own any businesses yet.</p>
-        <button class="action-btn" id="create-business-btn">Create Mining Business</button>
+        <h2>Mining Business</h2>
+        <p>You don't have a mining business yet.</p>
+        <button class="action-btn" id="create-mining-btn">Create Iron Ore Mining Business</button>
       `;
-      document.getElementById('create-business-btn').addEventListener('click', () => {
-        createBusiness(username);
+      document.getElementById('create-mining-btn').addEventListener('click', () => {
+        createMiningBusiness(username);
       });
       return;
     }
-    let html = '<h2>Your Businesses</h2>';
-    user.businesses.forEach(biz => {
-      html += `
-        <div class="business-container">
-          <div class="business-header"><strong>${biz.name}</strong> (${biz.type})</div>
-          <div><strong>Cash:</strong> $${biz.cash.toLocaleString()}</div>
-          <h3>Inventory</h3>
-          <div class="business-list">
-            ${Object.entries(biz.inventory).map(([item, qty]) => `<div>${item}: ${qty}</div>`).join('')}
-          </div>
-          <button class="action-btn" data-bizid="${biz.id}" onclick="startMining(event)">Mine Iron Ore (+10 per run) - Cost $1000</button>
+
+    market.updatePrices();
+
+    consoleDiv.innerHTML = `
+      <h2>${biz.name}</h2>
+      <div class="status-line"><strong>Cash Balance:</strong> $${biz.cash.toLocaleString()}</div>
+
+      <div class="supplies-section">
+        <h3 class="section-title">Supplies Inventory</h3>
+        <div class="supplies-list">
+          <ul>
+            <li>Fuel: ${biz.supplies.Fuel}</li>
+            <li>Tools: ${biz.supplies.Tools}</li>
+            <li>Chemicals: ${biz.supplies.Chemicals}</li>
+          </ul>
         </div>
-        <hr/>
-      `;
-    });
-    consoleDiv.innerHTML = html;
+        <button class="action-btn" id="buy-supplies-btn">Buy Supplies (Fuel, Tools, Chemicals for $1000 each)</button>
+      </div>
+
+      <div class="employees-section">
+        <h3 class="section-title">Employees</h3>
+        <p>Number of employees: ${biz.employees}</p>
+        <button class="action-btn" id="hire-employee-btn">Hire Employee ($5000 each)</button>
+      </div>
+
+      <div class="research-section">
+        <h3 class="section-title">Research & Development</h3>
+        <p>Efficiency Bonus: ${(biz.research.efficiency * 100).toFixed(1)}%</p>
+        <p>Quality Bonus: ${(biz.research.quality * 100).toFixed(1)}%</p>
+        <button class="action-btn" id="research-efficiency-btn">Research Efficiency Upgrade ($20,000)</button>
+        <button class="action-btn" id="research-quality-btn">Research Quality Upgrade ($20,000)</button>
+      </div>
+
+      <div class="inventory-section">
+        <h3 class="section-title">Inventory</h3>
+        <div class="inventory-list">
+          <ul>
+            <li>Raw Iron Ore: ${biz.inventory['Raw Iron Ore']}</li>
+            <li>Refined Iron Ore: ${biz.inventory['Refined Iron Ore']}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="production-controls">
+        <button class="mine-btn" id="start-mining-btn">Start Mining Operation (costs supplies and employees)</button>
+        <button class="action-btn" id="start-refining-btn">Refine Raw Ore to Refined Ore (costs Chemicals)</button>
+      </div>
+
+      <div class="market-price">
+        <h3 class="section-title">Market Prices</h3>
+        <p>Raw Iron Ore: $${market.rawIronOre.currentPrice.toFixed(2)} per unit (Global Supply: ${market.rawIronOre.globalSupply})</p>
+        <p>Refined Iron Ore: $${market.refinedIronOre.currentPrice.toFixed(2)} per unit (Global Supply: ${market.refinedIronOre.globalSupply})</p>
+      </div>
+
+      <div class="log-area" id="mining-log" aria-live="polite" aria-atomic="true">
+        Mining log will appear here...
+      </div>
+    `;
+
+    document.getElementById('buy-supplies-btn').addEventListener('click', () => buySupplies(username));
+    document.getElementById('hire-employee-btn').addEventListener('click', () => hireEmployee(username));
+    document.getElementById('research-efficiency-btn').addEventListener('click', () => researchEfficiency(username));
+    document.getElementById('research-quality-btn').addEventListener('click', () => researchQuality(username));
+    document.getElementById('start-mining-btn').addEventListener('click', () => startMiningOperation(username));
+    document.getElementById('start-refining-btn').addEventListener('click', () => startRefining(username));
   }
 
-  // Simple function to create a mining business for demo
-  function createBusiness(username) {
+  function createMiningBusiness(username) {
     const newBiz = {
       id: Date.now(),
       name: 'Iron Ore Mining Co. ' + Date.now(),
       type: 'Mining',
-      inventory: { 'Iron Ore': 0 },
-      productionQueue: [],
-      cash: 10000
+      cash: 50000,
+      supplies: { Fuel: 20, Tools: 20, Chemicals: 10 },
+      employees: 3,
+      employeeEfficiency: 1.0,
+      research: { efficiency: 0.1, quality: 0.05 },
+      inventory: { 'Raw Iron Ore': 0, 'Refined Iron Ore': 0 },
+      marketShare: 0
     };
     users[username].businesses.push(newBiz);
-    updateConsoleContent('Business', username);
+    updateConsoleContent('Mining', username);
   }
 
-  // Simple mining action, adds Iron Ore and deducts cash
-  window.startMining = function(event) {
-    const btn = event.target;
-    const bizId = Number(btn.getAttribute('data-bizid'));
-    const username = localStorage.getItem('loggedInUser');
-    const biz = users[username].businesses.find(b => b.id === bizId);
-    if(!biz) return;
-
-    if(biz.cash < 1000) {
-      alert('Not enough cash to start mining.');
+  function buySupplies(username) {
+    const biz = users[username].businesses[0];
+    if(biz.cash < 3000) {
+      alert('Not enough cash to buy all supplies.');
       return;
     }
-    biz.cash -= 1000;
-    biz.inventory['Iron Ore'] = (biz.inventory['Iron Ore'] || 0) + 10;
-    alert('Mining complete! 10 Iron Ore added.');
-    updateConsoleContent('Business', username);
-  };
-
-  // Render simple market UI for demo
-  function renderMarket(username) {
-    let html = `
-      <h2>Market</h2>
-      <p>Buy Chemicals needed for manufacturing.</p>
-      <div class="market-list">
-        <div class="market-item"><div>Chemicals</div><div>Price: $${marketInventory['Chemicals'].price}</div><div>Quantity Available: ${marketInventory['Chemicals'].quantity}</div><button class="action-btn" id="buy-chemicals-btn">Buy 10</button></div>
-      </div>
-    `;
-    consoleDiv.innerHTML = html;
-    document.getElementById('buy-chemicals-btn').addEventListener('click', () => {
-      buyChemical(username, 10);
-    });
+    biz.cash -= 3000;
+    biz.supplies.Fuel += 10;
+    biz.supplies.Tools += 10;
+    biz.supplies.Chemicals += 10;
+    logMiningEvent('Purchased 10 Fuel, Tools, Chemicals for $3000', username);
+    updateConsoleContent('Mining', username);
   }
 
-  // Buy chemicals from market and add to user's first business (simplified)
-  function buyChemical(username, qty) {
-    const user = users[username];
-    if(!user.businesses.length) {
-      alert('You need a business to buy materials.');
+  function hireEmployee(username) {
+    const biz = users[username].businesses[0];
+    if(biz.cash < 5000) {
+      alert('Not enough cash to hire an employee.');
       return;
     }
-    const marketQty = marketInventory['Chemicals'].quantity;
-    if(qty > marketQty) {
-      alert('Not enough Chemicals in the market.');
+    biz.cash -= 5000;
+    biz.employees += 1;
+    logMiningEvent('Hired one employee.', username);
+    updateConsoleContent('Mining', username);
+  }
+
+  function researchEfficiency(username) {
+    const biz = users[username].businesses[0];
+    if(biz.cash < 20000) {
+      alert('Not enough cash for efficiency research.');
       return;
     }
-    const biz = user.businesses[0];
-    const price = marketInventory['Chemicals'].price * qty;
-    if(biz.cash < price) {
-      alert('Business does not have enough cash!');
+    biz.cash -= 20000;
+    biz.research.efficiency += 0.05; // 5% improvement
+    logMiningEvent('Research completed: Efficiency upgraded by 5%.', username);
+    updateConsoleContent('Mining', username);
+  }
+
+  function researchQuality(username) {
+    const biz = users[username].businesses[0];
+    if(biz.cash < 20000) {
+      alert('Not enough cash for quality research.');
       return;
     }
-    marketInventory['Chemicals'].quantity -= qty;
-    biz.cash -= price;
-    biz.inventory['Chemicals'] = (biz.inventory['Chemicals'] || 0) + qty;
-    alert(`Purchased ${qty} Chemicals for $${price}`);
-    updateConsoleContent('Business', username);
+    biz.cash -= 20000;
+    biz.research.quality += 0.03; // 3% improvement
+    logMiningEvent('Research completed: Quality upgraded by 3%.', username);
+    updateConsoleContent('Mining', username);
+  }
+
+  function startMiningOperation(username) {
+    const biz = users[username].businesses[0];
+    const requiredFuel = 5;
+    const requiredTools = 3;
+    const employeesNeeded = 1;
+
+    if(biz.supplies.Fuel < requiredFuel || biz.supplies.Tools < requiredTools) {
+      alert('Not enough supplies to start mining operation.');
+      return;
+    }
+    if(biz.employees < employeesNeeded) {
+      alert('Not enough employees to run mining operation.');
+      return;
+    }
+
+    // Consume supplies
+    biz.supplies.Fuel -= requiredFuel;
+    biz.supplies.Tools -= requiredTools;
+
+    // Calculate mined ore amount influenced by employees and research efficiency
+    const baseMined = 10;
+    const employeeBonus = biz.employees * 2;
+    const efficiencyBonus = baseMined * biz.research.efficiency;
+    
+    let minedAmount = baseMined + employeeBonus + efficiencyBonus;
+    minedAmount = Math.floor(minedAmount);
+
+    // Influence global market supply
+    market.rawIronOre.globalSupply += minedAmount;
+
+    // Add mined ore to inventory
+    biz.inventory['Raw Iron Ore'] += minedAmount;
+
+    logMiningEvent(`Mining operation completed! Mined ${minedAmount} units of Raw Iron Ore.`, username);
+    updateConsoleContent('Mining', username);
+  }
+
+  function startRefining(username) {
+    const biz = users[username].businesses[0];
+    const requiredChemicals = 5;
+    const rawOreRequired = 10;
+
+    if(biz.supplies.Chemicals < requiredChemicals) {
+      alert('Not enough Chemicals to refine ore.');
+      return;
+    }
+    if(biz.inventory['Raw Iron Ore'] < rawOreRequired) {
+      alert('Not enough Raw Iron Ore to refine.');
+      return;
+    }
+
+    // Consume raw ore and chemicals
+    biz.supplies.Chemicals -= requiredChemicals;
+    biz.inventory['Raw Iron Ore'] -= rawOreRequired;
+
+    // Calculate amount of refined ore produced with quality bonus
+    const baseRefined = 8;
+    const qualityBonus = baseRefined * biz.research.quality;
+    let refinedAmount = baseRefined + qualityBonus;
+    refinedAmount = Math.floor(refinedAmount);
+
+    biz.inventory['Refined Iron Ore'] += refinedAmount;
+
+    // Update global supply of refined ore
+    market.refinedIronOre.globalSupply += refinedAmount;
+
+    logMiningEvent(`Refined ${rawOreRequired} units of Raw Iron Ore into ${refinedAmount} units of Refined Iron Ore.`, username);
+    updateConsoleContent('Mining', username);
+  }
+
+  // Logging helper
+  function logMiningEvent(message, username) {
+    const logArea = document.getElementById('mining-log');
+    if(logArea) {
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = `[${timestamp}] ${message}\n`;
+      logArea.textContent = entry + logArea.textContent;
+    }
   }
 
   logoutBtn.addEventListener('click', () => {
